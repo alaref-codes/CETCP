@@ -9,8 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.6.1",
+    "@fontsource/open-sans": "^5.0.2",
+    "@fontsource/tajawal": "^5.0.2",
+    "formik": "^2.4.0",
     "next": "13.4.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-player": "^2.12.0",
+    "swr": "^2.1.5",
+    "video-react": "^0.16.0"
   }
 }
