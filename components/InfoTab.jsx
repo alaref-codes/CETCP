@@ -5,13 +5,16 @@ import {
     OrderedList,
     UnorderedList,
     Container,
-    Box
+    Box,
+    Heading
   } from '@chakra-ui/react'
 
 import { MdCheckCircle } from "@chakra-ui/icons"
 export default function InfoTab() {
   return (
-            <List spacing={3}>
+    <Box marginX={{base:"5px",md:"50px"}} >
+    <Heading fontSize={"1.6rem"}> معلومات حول المحاضرة</Heading>
+            <List spacing={3} marginX={{base:"10px",md:"10%"}} marginY={"20px"} width={{base:"100%",md:"90%"}} >
             <ListItem>
             <ListIcon as={MdCheckCircle} color='green.500' />
                 رقم الدرس: 1
@@ -26,5 +29,6 @@ export default function InfoTab() {
             </ListItem>
             {/* You can also use custom icons from react-icons */}
         </List>
+        </Box>
     )
 }

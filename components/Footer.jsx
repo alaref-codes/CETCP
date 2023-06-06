@@ -1,5 +1,4 @@
 import { Box,Stack,Image,Flex,HStack,Link,Icon,Divider,VStack,Text } from "@chakra-ui/react";
-
 export default function Footer() {
   return (
             <Box
@@ -56,12 +55,12 @@ export default function Footer() {
             }}
             >
             <Flex justify="start" direction="column">
-                <Link textTransform="uppercase">Pre-Sale FAQS</Link>
-                <Link textTransform="uppercase">Submit a ticket</Link>
+                <Link href={"#"} textTransform="uppercase">Pre-Sale FAQS</Link>
+                <Link href={"#"} textTransform="uppercase">Submit a ticket</Link>
             </Flex>
             <Flex justify="start" direction="column">
-                <Link textTransform="uppercase">Services</Link>
-                <Link textTransform="uppercase">Theme Tweak</Link>
+                <Link href={"#"} textTransform="uppercase">Services</Link>
+                <Link href={"#"} textTransform="uppercase">Theme Tweak</Link>
             </Flex>
             </HStack>
             <HStack
@@ -82,14 +81,14 @@ export default function Footer() {
             }}
             >
             <Flex justify="start" direction="column">
-                <Link textTransform="uppercase">Show Case</Link>
-                <Link textTransform="uppercase">Widget Kit</Link>
-                <Link textTransform="uppercase">Support</Link>
+                <Link href={"#"} textTransform="uppercase">Show Case</Link>
+                <Link href={"#"} textTransform="uppercase">Widget Kit</Link>
+                <Link href={"#"} textTransform="uppercase">Support</Link>
             </Flex>
             <Flex justify="start" direction="column">
-                <Link textTransform="uppercase">About Us</Link>
-                <Link textTransform="uppercase">Contact Us</Link>
-                <Link textTransform="uppercase">Resources</Link>
+                <Link href={"#"} textTransform="uppercase">About Us</Link>
+                <Link href={"#"} textTransform="uppercase">Contact Us</Link>
+                <Link href={"#"} textTransform="uppercase">Resources</Link>
             </Flex>
             </HStack>
             </Stack>
@@ -112,6 +111,7 @@ export default function Footer() {
                 }}
                 h="20px"
                 w="20px"
+                href={"#"}
                 />
             </Link>
             <Link>
@@ -122,6 +122,7 @@ export default function Footer() {
                 }}
                 h="20px"
                 w="20px"
+                href="#"
                 />
             </Link>
             <Link>
@@ -131,6 +132,7 @@ export default function Footer() {
                 }}
                 h="20px"
                 w="20px"
+                href="#"
                 />
             </Link>
             <Link>
@@ -140,6 +142,7 @@ export default function Footer() {
                 }}
                 h="20px"
                 w="20px"
+                href="#"
                 />
             </Link>
             </HStack>

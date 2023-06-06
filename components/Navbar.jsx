@@ -8,10 +8,10 @@ import {
     Stack,
     Collapse,
     Icon,
-    Link,
     Popover,
     PopoverTrigger,
     Input,
+
     PopoverContent,
     useColorModeValue,
     useDisclosure,
@@ -23,23 +23,26 @@ import {
     SearchIcon,
     ChevronRightIcon,
   } from '@chakra-ui/icons';
+  import { useRouter } from 'next/router';
+  import Link from 'next/link';
   
-  import { useFormik } from "formik";
+  import { useForm } from 'react-hook-form';
+
 import { useState } from 'react';
   
 
   export default function WithSubnavigation() {
+    const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
+    const form = useForm();
+    const { register,handleSubmit } = form;
 
-    const formik = useFormik({
-      initialValues: {
-        search: '',
-      },
-      onSubmit: (values) => {
-         window.location.href = `/searchPage/${values.search}`;
-      },
-    })
+
+    const onSubmit = (values) => {
+      router.push(`/searchPage/${values.search}`)
+
+    }
 
     const searchToggle = () => {
       setSearchIsOpen(!searchIsOpen)
@@ -50,7 +53,6 @@ import { useState } from 'react';
         <Flex
           bg={useColorModeValue('white', 'gray.800')}
           color={useColorModeValue('gray.600', 'white')}
-          minH={'60px'}
           py={{ base: 2 }}
           px={{ base: 4 }}
           borderBottom={1}
@@ -80,7 +82,6 @@ import { useState } from 'react';
           <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
             <Link
               textAlign={{ base: 'center', md: 'left' }}
-              fontFamily={'heading'}
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
@@ -93,10 +94,10 @@ import { useState } from 'react';
           </Flex>
   
           <HStack flexWrap={{base:"wrap", md:"nowrap" }} spacingy="20px"  display={{base:'none',md:'inline-flex'}} mx={{base:"10%", md:"1%"}} width={{base:"60%",md:"50%",lg:"70%"}} >
-        <form onSubmit={formik.handleSubmit} >
+        <form onSubmit={handleSubmit(onSubmit)} >
           <HStack px="10px" border="1px solid black" borderRadius="10px" >
-            <button><SearchIcon onClick={formik.handleSubmit} ></SearchIcon></button>
-            <Input required w={{lg:"360px"}} id="search" border="0px solid white" onChange={formik.handleChange}  value={formik.values.search} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
+            <button><SearchIcon onClick={handleSubmit(onSubmit)} ></SearchIcon></button>
+            <Input required w={{lg:"360px"}} id="search" border="0px solid white"  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
           </HStack>
         </form>
   
@@ -109,27 +110,27 @@ import { useState } from 'react';
             justify={'flex-end'}
             direction={'row'}
             spacing={6}>
-            <Button
-              as={'a'}
-              fontSize={'sm'}
-              fontWeight={400}
-              variant={'link'}
-              href={'/signin'}>
-              Sign In
-            </Button>
-            <Button
-              as={'a'}
+            <Link href={"/signup"} >
+              <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
+            </Link>
+            <Link
               display={{ base: 'none', md: 'inline-flex' }}
-              fontSize={'sm'}
               fontWeight={600}
-              color={'white'}
-              bg={'blue.400'}
               href={'/signup'}
               _hover={{
                 bg: 'blue.300',
-              }}>
-              Sign Up
-            </Button>
+              }}><Button bg={'blue.400'} color={'white'}>
+              <Text fontSize={"15px"}>تسجيل حساب</Text>
+              </Button>
+            </Link>
+            <Link
+              fontSize={'sm'}
+              fontWeight={400}
+              href={'/signin'}>
+              <Button  color={'black'}>
+              <Text fontSize={"15px"}>تسجيل دخول</Text>
+              </Button>
+            </Link>
           </Stack>
         </Flex>
   
@@ -225,27 +226,24 @@ import { useState } from 'react';
   };
   
   const SearchNav = () => {
-    const formik = useFormik({
-      initialValues: {
-        search: '',
-      },
-      onSubmit: (values) => {
-        if (values === '') {
-          
+    const form = useForm();
+    const { register,handleSubmit } = form;
+    const router = useRouter()
 
-        }
-        window.location.href = `./searchPage/${values.search}`;
+    const onSubmit = (values) => {
+      console.log(values);
+      router.push(`/searchPage/${values.search}`)
 
-      },
-    })
+    }
+
     return (
       <Stack
         bg={useColorModeValue('white', 'gray.800')}
         p={4}
         display={{ md: 'none' }}>
           <HStack px="10px" border="1px solid black" borderRadius="10px" >
-            <IconButton icon={<SearchIcon onClick={formik.handleSubmit} variant={'ghost'} />}></IconButton>
-            <Input required  id="search" border="0px solid white" onChange={formik.handleChange}  value={formik.values.search} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
+            <IconButton icon={<SearchIcon onClick={handleSubmit(onSubmit)} variant={'ghost'} />}></IconButton>
+            <Input required  id="search" border="0px solid white" onChange={handleSubmit(onSubmit)}  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
           </HStack>
       </Stack>
     );
@@ -340,6 +338,18 @@ import { useState } from 'react';
         },
       ],
     },
+    {
+      label: "تسجيل دخول",
+      href:"/signin"
+    },
+    {
+      label: "تسجيل حساب",
+      href:"/signup"
+    },
+    {
+      label: "تسجيل كمدرب",
+      href:"/signin"
+    }
 
 
   ];

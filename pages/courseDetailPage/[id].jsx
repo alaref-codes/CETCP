@@ -134,7 +134,7 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
               finalFocusRef={finalRef}
               isOpen={isOpen}
               onClose={onClose}
-              size={"2xl"}
+              size={{base:"md", md:"2xl"}}
             >
               <ModalOverlay />
               <ModalContent>
@@ -148,10 +148,10 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
                 </ModalBody>
 
                 <ModalFooter>
-                  <Button colorScheme='blue' mr={3}>
-                    Save
+                  <Button colorScheme='blue' ml={"10px"}>
+                    إتمام العملية
                   </Button>
-                  <Button onClick={onClose}>Cancel</Button>
+                  <Button onClick={onClose}>الرجوع</Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>

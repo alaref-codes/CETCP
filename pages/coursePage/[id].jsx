@@ -1,24 +1,26 @@
 import { useRouter } from 'next/router';
-import {Grid, GridItem,Image,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel, Flex, Box, Divider, Heading} from "@chakra-ui/react"
+import {Grid, GridItem,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel, Flex, Box, Divider, Heading} from "@chakra-ui/react"
 import Loading from '../../components/Loading'
 import useSWR from 'swr';
 import ReactPlayer from 'react-player'
-
+import { useState } from 'react';
 import InfoTab from '@/components/InfoTab';
-import CommentsTab from '@/components/CommentsTab';
 import AttachementTab from '@/components/AttachementTab';
+import CommentsTab from '@/components/CommentsTab';
 
 export default function CoursePage() {
-    const router = useRouter();
-    console.log(router.query.id);
+  const [duration, setDuration] = useState(null);
+  const router = useRouter();
+  const onDuration = (duration) => {
+    alert(duration/60)
+  };
 
 
-    const fetcher = (url) => fetch(url).then(res => res.json())
-    const { data, error, isLoading } = useSWR(`http://localhost:5000/courses/${router.query.id}`, fetcher)
+  const fetcher = (url) => fetch(url).then(res => res.json())
+  const { data, error, isLoading } = useSWR(`http://localhost:5000/courses/${router.query.id}`, fetcher)
 
-    console.log(data);
-    if (isLoading) return <Loading></Loading>;
-    if (!data) return <Loading></Loading>;
+  if (isLoading) return <Loading></Loading>;
+  if (!data) return <Loading></Loading>;
 
   return (
     <Grid templateColumns="repeat(8, 1fr)" bg="gray.50" >
@@ -29,7 +31,7 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"} src={"test.mp4"} url='test.mp4'/>
+            <ReactPlayer height={"500px"} width={"100%"} onDuration={onDuration} url='https://www.youtube.com/watch?v=Vmw1C7T0hqY'/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
@@ -37,17 +39,16 @@ export default function CoursePage() {
             <Tab>مرفقات</Tab>
             <Tab>تعليقات</Tab>
             <Tab display={{base:"grid",md:"none"}} >محتوى الدورة</Tab>
-
         </TabList>
-        <TabPanels  mr='2em' >
+        <TabPanels  pr='1.5em' >
             <TabPanel>
-            <InfoTab/>
+              <InfoTab/>
             </TabPanel>
             <TabPanel>
                 <AttachementTab/>
             </TabPanel>
             <TabPanel>
-                <CommentsTab/>
+                <CommentsTab></CommentsTab>
             </TabPanel>
         </TabPanels>
         </Tabs>
@@ -63,10 +64,19 @@ export default function CoursePage() {
             h={"100vh"}
             marginTop={"15px"}
             p={{base:"20px", lg:"5px" }} 
+            
             borderBottom={"2px solid black"}
-            borderBottomRadius={"60px"}
+            sx={{'&::-webkit-scrollbar': {
+              width: '16px',
+              borderRadius: '17px',
+              backgroundColor: "blue.50",
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: `rgba(0, 0, 0, 0.05)`,
+              borderRadius: '17px',
+            },}}
         >
-        <Box> 
+        <Box paddingRight={"10px"} > 
             <Heading borderBottom={"4px solid black"} fontSize={"1.7rem"} height={"min-content"} >محتوى الدورة</Heading>    
             <OrderedList marginRight={"30px"} >
             <ListItem bg={"cornsilk.300"} 

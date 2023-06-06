@@ -1,6 +1,7 @@
 import Layout from "../components/layout"
-import '@fontsource/tajawal/300.css'
 import { ChakraProvider } from '@chakra-ui/react'
+import '@fontsource/tajawal/300.css'
+import '@fontsource/almarai/300.css';
 
 import { extendTheme } from '@chakra-ui/react'
 
@@ -9,8 +10,8 @@ import { extendTheme } from '@chakra-ui/react'
 
 const theme = extendTheme({
   fonts: {
-    heading: `'Tajawal', sans-serif`,
-    body: `'Tajawal', sans-serif`,
+    heading: `'Almarai', sans-serif`,
+    body: `'Almarai', sans-serif`,
   },
 })
 

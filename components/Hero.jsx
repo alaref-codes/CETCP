@@ -23,6 +23,7 @@ export default function WithBackgroundImage() {
         px={useBreakpointValue({ base: 4, md: 8 })}
         bgGradient={'linear(to-r, blackAlpha.600, transparent)'}>
         <Stack maxW={'2xl'} align={'flex-start'} spacing={6}>
+   
           <Text
             color={'white'}
             fontWeight={700}

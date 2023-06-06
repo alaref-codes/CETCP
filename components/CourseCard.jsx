@@ -1,8 +1,8 @@
-import { Flex,Box,Image,Icon,chakra,Link} from '@chakra-ui/react'
-
+import { Flex,Box,Image,Icon,chakra} from '@chakra-ui/react'
+import Link from 'next/link'
 export default function CourseCard(props) {
   return (
-    <Link href={`./courseDetailPage/${props.course.id}`} >
+    <Link href={`/courseDetailPage/${props.course.id}`} >
             <Box w={{base:"300px", md:"full"}}>
             <Flex
         _dark={{
