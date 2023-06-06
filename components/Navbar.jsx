@@ -79,13 +79,13 @@ import { useState } from 'react';
               }
             />
           </Flex>
-          <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+          <Flex flex={{ base: 1 }}  justify={{ base: 'center', md: 'start' }}>
             <Link
               textAlign={{ base: 'center', md: 'left' }}
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-              كلية التقنية الإلكترونية
+              <Text marginLeft={"20px"} >كلية التقنية الإلكترونية</Text>
             </Link>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
@@ -93,18 +93,14 @@ import { useState } from 'react';
             </Flex>
           </Flex>
   
-          <HStack flexWrap={{base:"wrap", md:"nowrap" }} spacingy="20px"  display={{base:'none',md:'inline-flex'}} mx={{base:"10%", md:"1%"}} width={{base:"60%",md:"50%",lg:"70%"}} >
+          {/* <HStack flexWrap={{base:"wrap", md:"nowrap" }} spacingy="20px"  display={{base:'none',md:'inline-flex'}} mx={{md:"1%"}} width={{base:"60%",md:"50%",lg:"50%"}} >
         <form onSubmit={handleSubmit(onSubmit)} >
           <HStack px="10px" border="1px solid black" borderRadius="10px" >
             <button><SearchIcon onClick={handleSubmit(onSubmit)} ></SearchIcon></button>
             <Input required w={{lg:"360px"}} id="search" border="0px solid white"  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
           </HStack>
         </form>
-  
-            <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-              <DesktopNav />
-            </Flex>
-    </HStack>
+          </HStack> */}
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
@@ -241,10 +237,12 @@ import { useState } from 'react';
         bg={useColorModeValue('white', 'gray.800')}
         p={4}
         display={{ md: 'none' }}>
+        <form onSubmit={handleSubmit(onSubmit)} >
           <HStack px="10px" border="1px solid black" borderRadius="10px" >
             <IconButton icon={<SearchIcon onClick={handleSubmit(onSubmit)} variant={'ghost'} />}></IconButton>
             <Input required  id="search" border="0px solid white" onChange={handleSubmit(onSubmit)}  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
           </HStack>
+          </form>
       </Stack>
     );
   };
@@ -338,18 +336,18 @@ import { useState } from 'react';
         },
       ],
     },
-    {
-      label: "تسجيل دخول",
-      href:"/signin"
-    },
-    {
-      label: "تسجيل حساب",
-      href:"/signup"
-    },
-    {
-      label: "تسجيل كمدرب",
-      href:"/signin"
-    }
+    // {
+    //   label: "تسجيل دخول",
+    //   href:"/signin"
+    // },
+    // {
+    //   label: "تسجيل حساب",
+    //   href:"/signup"
+    // },
+    // {
+    //   label: "تسجيل كمدرب",
+    //   href:"/signin"
+    // }
 
 
   ];
