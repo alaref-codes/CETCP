@@ -1,10 +1,9 @@
 import CourseInfoTabForm from '@/components/CourseInfoTabForm'
-import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
+import CourseLectureInfoTab from '@/components/CourseLectureInfoTab'
+import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { Tabs,Flex, TabList,Text, TabPanels,Box, Tab, TabPanel, Heading } from '@chakra-ui/react'
-import { Form } from 'formik'
 import Link from 'next/link'
 import React from 'react'
-// display={{base:"none",md:"initial"}} 
 export default function CourseManage() {
   return (
     <Box>
@@ -23,7 +22,7 @@ export default function CourseManage() {
                 <Link href={"/instructor/courses"}><Text marginRight={"8px"}>الرجوع إلى الصفحة السابقة</Text></Link>
                 <Text marginRight={"100px"} fontWeight={"900"} >تعلم البرمجة</Text>
               </Flex>
-              <Heading marginRight={"20px"} marginTop={"20px"} >قم بتعبئة بيانات المسار الخاص بك</Heading>
+              <Heading marginRight={"20px"} marginTop={"20px"} >قم بتعبئة بيانات الدورة الخاصة بك</Heading>
 
           </Box>
       <Box width={"80%"} margin={"50px auto"}>
@@ -38,10 +37,10 @@ export default function CourseManage() {
 
             <TabPanels>
                 <TabPanel>
-                        <CourseInfoTabForm></CourseInfoTabForm>
+                  <CourseInfoTabForm></CourseInfoTabForm>
                 </TabPanel>
                 <TabPanel>
-                <p>two!</p>
+                  <CourseLectureInfoTab></CourseLectureInfoTab>  
                 </TabPanel>
                 <TabPanel>
                 <p>three!</p>

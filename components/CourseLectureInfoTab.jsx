@@ -35,9 +35,9 @@ import {
             p={8}
             width={{base:"100%" ,lg:"4xl"}}>
             <Stack spacing={4}>
-              <Text fontSize={"xl"}> ملاحظة: هذه المعلومات ستعرض في الواجهة الرئيسية الخاصة بالدورة</Text>
+              <Text fontSize={"xl"}>بيانات المحاضرات</Text>
               <FormControl id="email">
-                <FormLabel>اسم الدورة</FormLabel>
+                <FormLabel>عنوان المحاضرة</FormLabel>
                 <Input type="text" />
               </FormControl>
               <FormControl id="password">
@@ -45,36 +45,10 @@ import {
                 <Textarea type="textarea" />
               </FormControl>
               <FormControl id="courseImage">
-                <FormLabel>خلفية البرنامج</FormLabel>
+                <FormLabel>فيديو المحاضرة</FormLabel>
                 <Input type="file" width={"fit-content"} ></Input>
               </FormControl>
-              <FormControl as={GridItem} colSpan={[6, 3]}>
-                <FormLabel
-                  htmlFor="country"
-                  fontSize="md"
-                  fontWeight="md"
-                  color="gray.700"
-                  _dark={{
-                    color: 'gray.50',
-                  }}>
-                  فئة الدورة
-                </FormLabel>
-                <Select
-                  id="country"
-                  name="country"
-                  autoComplete="country"
-                  placeholder="Select option"
-                  focusBorderColor="brand.400"
-                  shadow="sm"
-                  size="sm"
-                  w="full"
-                  rounded="md">
-                  <option>البرمجة</option>
-                  <option>الاتصالات</option>
-                  <option>الشبكات</option>
-                  <option>تحكم آلي</option>
-                </Select>
-              </FormControl>
+              
               <Stack spacing={10}>
 
                 <Button

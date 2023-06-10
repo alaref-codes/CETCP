@@ -31,7 +31,7 @@ import {
 import { useState } from 'react';
   
 
-  export default function Navbar() {
+  export default function DarkNavbar() {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
@@ -51,7 +51,7 @@ import { useState } from 'react';
     return (
       <Box>
         <Flex
-          bg={useColorModeValue('#4694D0', 'gray.800')}
+          bg={useColorModeValue('gray.100', 'gray.800')}
           color={useColorModeValue('gray.200', 'white')}
           py={{ base: 2 }}
           px={{ base: 4 }}
@@ -85,7 +85,7 @@ import { useState } from 'react';
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-          <Image src="/cet_logo.png"  alt="me" width={"400px"} height={"70px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src="/cet_logo.png"  alt="me" width={"400px"} height={"70px"} backgroundColor={"gray"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>

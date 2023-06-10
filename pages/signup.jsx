@@ -1,7 +1,8 @@
-"use client"
-import {
+
+  import {
     Flex,
     Box,
+    Image,
     FormControl,
     FormLabel,
     Input,
@@ -12,19 +13,36 @@ import {
     Button,
     Heading,
     Text,
+    RadioGroup,
+    Radio,
     useColorModeValue,
     Link,
+    VStack,
   } from '@chakra-ui/react';
   import { useState } from 'react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
+import Head from 'next/head';
+
   
-  export default function SignupCard() {
+  export default function Signup() {
+    const [value, setValue] = useState('1')
     const [showPassword, setShowPassword] = useState(false);
-    const form = useForm();
+    const form = useForm({
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
+      }
+    });
     const toast = useToast()
-    const { register,handleSubmit } = form;
+    const { register,handleSubmit, formState } = form;
+
+    const { errors,isDirty } = formState
+    console.log(isDirty);
+
 
     const onSubmit = (data) => {
       console.log(data);
@@ -36,85 +54,143 @@ import {
         isClosable: true,
       })
     }
-
     return (
-      <Flex
-        minH={'100vh'}
+      <Stack minH={'100vh'}  direction={{ base: 'column', md: 'row' }}>
+        <Flex
+        minH={'100%'}
         align={'center'}
         justify={'center'}
+
         bg={useColorModeValue('gray.50', 'gray.800')}>
-        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-          <Stack align={'center'}>
-            <Heading fontSize={'4xl'} textAlign={'center'}>
-              Sign up
-            </Heading>
-            <Text fontSize={'lg'} color={'gray.600'}>
-              to enjoy all of our cool features ✌️
-            </Text>
-          </Stack>
-          <Box
-            rounded={'lg'}
-            bg={useColorModeValue('white', 'gray.700')}
-            boxShadow={'lg'}
-            p={8}>
-            <Stack spacing={4}>
-                 <form  onSubmit={handleSubmit(onSubmit)}>
-                  <HStack>
-                    <Box>
-                      <FormControl>
-                        <FormLabel htmlFor='firstName' >First Name</FormLabel>
-                        <Input  id='firstName' type="text" {...register("firstName")} />
-                      </FormControl>
-                      </Box>
+        <VStack>
+        <Image src="/cet_logo.png"  alt="me" bg={"lightsteelblue"} width={"500px"}  borderRadius={"10px"} ></Image>
+          <Stack spacing={2} mx={'auto'} maxW={'lg'} py={12} px={6}>
+
+            <Box
+              rounded={'lg'}
+              bg={useColorModeValue('white', 'gray.700')}
+              boxShadow={'lg'}
+              p={8}>
+              <Stack spacing={4}>
+                  <form  onSubmit={handleSubmit(onSubmit)}>
+                    <HStack>
                       <Box>
-                      <FormControl>
-                        <FormLabel htmlFor='lastName' >Last Name</FormLabel>
-                        <Input id='lastName' type="text" {...register("lastName")} />
-                      </FormControl>
-                    </Box>
-                  </HStack>
-                  <FormControl>
-                    <FormLabel htmlFor='email' >Email address</FormLabel>
-                    <Input id='email' type="email" {...register("email")} />
+                        <FormControl>
+                          <FormLabel htmlFor='firstName' >اسم المستخدم</FormLabel>
+                          <Input  id='firstName' type="text" {...register("firstName" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            }
+                          })} />
+                          <Text color={"red"} fontSize={"12px"} >{errors.firstName?.message}</Text>
+                        </FormControl>
+                        </Box>
+                        <Box>
+                        <FormControl>
+                      <FormLabel htmlFor='email' >Email address</FormLabel>
+                      <Input id='email' type="email" {...register("email" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            },
+                            pattern: {
+                              value: /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/,
+                              message: "Invalid email format"
+                            }
+                          })} />
+                    </FormControl>
+                    <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
+
+                      </Box>
+                    </HStack>
+                    <FormControl>
+                      <FormLabel  htmlFor='number' >رقم الهاتف</FormLabel>
+                      <Input id='number'  type='tel' {...register("number" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            },
+                            pattern: {
+                              value: /^09[124]\d{8}$/,
+                              message: "الرجاء إدخال رقم صالح في دولة ليبيا"
+                            }
+                          })}></Input>
+                          <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel  htmlFor='phone' >الجنس</FormLabel>
+                      <RadioGroup onChange={setValue} value={value}>
+                      <Stack direction='row'>
+                        <Radio colorScheme='blue' value='1'>ذكر</Radio>
+                        <Radio colorScheme='pink' value='2'>أنثى</Radio>
+                      </Stack>
+                    </RadioGroup>
                   </FormControl>
-                  <FormControl>
-                  <FormLabel htmlFor='password'>Password</FormLabel>
-                  <InputGroup>
-                    <Input id='password' type={showPassword ? 'text' : 'password'} {...register("password")} />
-                    <InputRightElement h={'full'}>
-                      <Button
-                        variant={'ghost'}
-                        onClick={() =>
-                          setShowPassword((showPassword) => !showPassword)
-                        }>
-                        {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-              <Stack spacing={10} pt={2}>
-                <Button
-                  type='submit'
-                  loadingText="Submitting"
-                  size="lg"
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}>
-                  Sign up
-                </Button>
+                    <FormControl>
+                    <FormLabel htmlFor='password'>Password</FormLabel>
+                    <InputGroup>
+                      <Input id='password' type={showPassword ? 'text' : 'password'} {...register("password" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            }
+                          })} />
+                      <InputRightElement h={'full'}>
+                        <Button
+                          variant={'ghost'}
+                          onClick={() =>
+                            setShowPassword((showPassword) => !showPassword)
+                          }>
+                          {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                    <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
+                  </FormControl>
+                <Stack spacing={10} pt={2}>
+                  <Button
+                    isDisabled={!isDirty}
+                    type='submit'
+                    loadingText="Submitting"
+                    size="lg"
+                    bg={'blue.400'}
+                    color={'white'}
+                    _hover={{
+                      bg: 'blue.500',
+                    }}>
+                    Sign up
+                  </Button>
+                </Stack>
+              </form>
+                <Stack pt={6}>
+                  <Text align={'center'}>
+                    Already a user? <Link color={'blue.400'}>Login</Link>
+                  </Text>
+                </Stack>
               </Stack>
-            </form>
-              <Stack pt={6}>
-                <Text align={'center'}>
-                  Already a user? <Link color={'blue.400'}>Login</Link>
-                </Text>
-              </Stack>
-            </Stack>
-          </Box>
-        </Stack>
+            </Box>
+          </Stack>
+        </VStack>
       </Flex>
+        <Flex flex={1}>
+          <Image
+            src={
+              'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80'
+            }
+          />
+        </Flex>
+      </Stack>
     );
   }
+
+
+
+  Signup.getLayout = function PageLayout(page) { 
+    return (
+      <>
+        {page}
+      </>
+    )
   
+  }

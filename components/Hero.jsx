@@ -37,7 +37,7 @@ export default function WithBackgroundImage() {
               rounded="base"
               color={'white'}
               _hover={{ bg: 'blue.500' }}>
-              تفقد الكورسات
+              تصفح الدورات
             </Button>
           </Stack>
         </Stack>
