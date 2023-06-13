@@ -23,8 +23,8 @@ export default function Comment() {
             <Box padding={"0px"} h={"0px"} marginBottom={"10px"}>
                 <Text>قم بكتابة تعليقك</Text>
             </Box>
-            <FormControl width={"500px"} marginY={"20px"}>
-                <Textarea  placeholder="أضف تعليقك هنا"  id='firstName' type="text" {...register("firstName")} />
+            <FormControl width={{base:"300px",md:"500px"}} marginY={"20px"}>
+                <Textarea   width={"100%"} placeholder="أضف تعليقك هنا"  id='firstName' type="text" {...register("firstName")} />
             </FormControl> 
             <Button
             type='submit'

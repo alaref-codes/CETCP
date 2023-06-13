@@ -79,13 +79,21 @@ import { useState } from 'react';
               }
             />
           </Flex>
-          <Flex flex={{ base: 1 }}  justify={{ base: 'center', md: 'start' }} align={"center"} >
+          <Flex flex={{ base: 4 }}  justify={{ base: 'center', md: 'start' }} align={"center"} >
+          <Link 
+              fontSize={'sm'}
+              fontWeight={400}
+              href={'/signin'}>
+              <Button  color={'black'} display={{base:"flex",md:"none"}}>
+              <Text fontSize={"15px"}>تسجيل دخول</Text>
+              </Button>
+            </Link>
             <Link
               textAlign={{ base: 'center', md: 'left' }}
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-          <Image src="/cet_logo.png"  alt="me" width={"400px"} height={"70px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src="/cet_logo.png"  alt="me" width={{ base:"800px", md:"400px"}} height={"70px"}  borderRadius={"10px"} marginLeft={"20px"} bg={"blackAlpha.50"} ></Image>
             </Link>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
@@ -105,12 +113,13 @@ import { useState } from 'react';
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
             direction={'row'}
+            display={{ base: 'none', md: 'inline-flex' }}
+
             spacing={6}>
             <Link href={"/signup"} >
               <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
             </Link>
             <Link
-              display={{ base: 'none', md: 'inline-flex' }}
               fontWeight={600}
               href={'/signup'}
               _hover={{
@@ -119,7 +128,7 @@ import { useState } from 'react';
               <Text fontSize={"15px"}>تسجيل حساب</Text>
               </Button>
             </Link>
-            <Link
+            <Link 
               fontSize={'sm'}
               fontWeight={400}
               href={'/signin'}>
@@ -155,10 +164,10 @@ import { useState } from 'react';
                   p={2}
                   href={navItem.href ?? '#'}
                   fontWeight={800}
-                  color={linkColor}
+                  color={"black"}
                   _hover={{
                     textDecoration: 'none',
-                    color: linkHoverColor,
+                    color: "black",
                   }}>
                   <Text fontWeight={"bold"} fontSize={'xl'} >{navItem.label}</Text>
                 </Link>
@@ -198,6 +207,7 @@ import { useState } from 'react';
         <Stack direction={'row'} align={'center'}>
           <Box>
             <Text
+              color={"black"}
               transition={'all .3s ease'}
               _groupHover={{ color: 'pink.400' }}
               fontWeight={500}>

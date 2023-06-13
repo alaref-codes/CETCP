@@ -23,7 +23,6 @@
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
-import Head from 'next/head';
 
   
   export default function Signup() {
@@ -31,7 +30,7 @@ import Head from 'next/head';
     const [showPassword, setShowPassword] = useState(false);
     const form = useForm({
       defaultValues: {
-        firstName: "",
+        username: "",
         lastName: "",
         email: "",
         password: ""
@@ -76,48 +75,47 @@ import Head from 'next/head';
                     <HStack>
                       <Box>
                         <FormControl>
-                          <FormLabel htmlFor='firstName' >اسم المستخدم</FormLabel>
-                          <Input  id='firstName' type="text" {...register("firstName" , {
+                          <FormLabel htmlFor='username' >اسم المستخدم</FormLabel>
+                          <Input  id='username' type="text" {...register("username" , {
                             required: {
                               value: true,
                               message: "يجب تعبئة هذا الحقل"
                             }
                           })} />
-                          <Text color={"red"} fontSize={"12px"} >{errors.firstName?.message}</Text>
+                          <Text color={"red"} fontSize={"12px"} >{errors.username?.message}</Text>
                         </FormControl>
                         </Box>
                         <Box>
-                        <FormControl>
-                      <FormLabel htmlFor='email' >Email address</FormLabel>
-                      <Input id='email' type="email" {...register("email" , {
-                            required: {
-                              value: true,
-                              message: "يجب تعبئة هذا الحقل"
-                            },
-                            pattern: {
-                              value: /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/,
-                              message: "Invalid email format"
-                            }
-                          })} />
-                    </FormControl>
-                    <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
-
+                          <FormControl>
+                            <FormLabel  htmlFor='number' >رقم الهاتف</FormLabel>
+                            <Input id='number'  type='tel' {...register("number" , {
+                                  required: {
+                                    value: true,
+                                    message: "يجب تعبئة هذا الحقل"
+                                  },
+                                  pattern: {
+                                    value: /^09[124]\d{8}$/,
+                                    message: "الرجاء إدخال رقم صالح في دولة ليبيا"
+                                  }
+                                })}></Input>
+                                <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
+                          </FormControl>
                       </Box>
                     </HStack>
                     <FormControl>
-                      <FormLabel  htmlFor='number' >رقم الهاتف</FormLabel>
-                      <Input id='number'  type='tel' {...register("number" , {
-                            required: {
-                              value: true,
-                              message: "يجب تعبئة هذا الحقل"
-                            },
-                            pattern: {
-                              value: /^09[124]\d{8}$/,
-                              message: "الرجاء إدخال رقم صالح في دولة ليبيا"
-                            }
-                          })}></Input>
-                          <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
+                            <FormLabel htmlFor='email' >البريد الإلكتروني</FormLabel>
+                            <Input id='email' type="email" {...register("email" , {
+                                  required: {
+                                    value: true,
+                                    message: "يجب تعبئة هذا الحقل"
+                                  },
+                                  pattern: {
+                                    value: /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/,
+                                    message: "Invalid email format"
+                                  }
+                                })} />
                     </FormControl>
+                    <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
                     <FormControl>
                         <FormLabel  htmlFor='phone' >الجنس</FormLabel>
                       <RadioGroup onChange={setValue} value={value}>
@@ -128,12 +126,16 @@ import Head from 'next/head';
                     </RadioGroup>
                   </FormControl>
                     <FormControl>
-                    <FormLabel htmlFor='password'>Password</FormLabel>
+                    <FormLabel htmlFor='password'>كلمة المرور</FormLabel>
                     <InputGroup>
                       <Input id='password' type={showPassword ? 'text' : 'password'} {...register("password" , {
                             required: {
                               value: true,
                               message: "يجب تعبئة هذا الحقل"
+                            },
+                            pattern: {
+                              value: /^(?=.{8,}$)[a-zA-Z0-9!@#$%^&*()_+]{8,}$/,
+                              message: "كلمة المرور يجب أن لا تقل عن 8 حروف أو أرقام"
                             }
                           })} />
                       <InputRightElement h={'full'}>
@@ -165,7 +167,7 @@ import Head from 'next/head';
               </form>
                 <Stack pt={6}>
                   <Text align={'center'}>
-                    Already a user? <Link color={'blue.400'}>Login</Link>
+                    هل لديك حساب بالفعل <Link href='./signin' color={'blue.400'}>تسجيل دخول</Link>
                   </Text>
                 </Stack>
               </Stack>

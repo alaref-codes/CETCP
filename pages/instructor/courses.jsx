@@ -30,8 +30,8 @@ export default function InstructorCourses() {
     <Box>
     <Flex  direction={"column"} borderBottom="1px solid gray"  bg='blue.50' h='250px'>
       <Box marginX={{base:"50px",md:"100px"}} marginY={"80px"}>
-      <Heading as={"h1"} fontSize={"4xl"} bottom={{base:"100px",md:"1px"}} right={"150px"} >مرحبا،  </Heading>
-      <Heading as={"h1"} fontSize={"3xl"} paddingTop={"30px"} bottom={{base:"100px",md:"1px"}} right={"150px"} >كورساتك </Heading>
+      <Heading as={"h1"} fontSize={"4xl"} bottom={{base:"100px",md:"1px"}} right={"150px"} >مرحباً،  </Heading>
+      <Heading as={"h1"} fontSize={"3xl"} paddingTop={"30px"} bottom={{base:"100px",md:"1px"}} right={"150px"} >الدورات الخاصة بك</Heading>
       </Box>
     </Flex>
     <Flex direction={{base:"column",md:"row"}} width={"75%"} margin={"50px auto"}>

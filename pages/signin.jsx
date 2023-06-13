@@ -4,17 +4,51 @@ import {
     FormControl,
     FormLabel,
     Input,
-    Checkbox,
     Stack,
+    Text,
     Link,
+    InputGroup,
+    InputRightElement,
     Image,
     Button,
     Heading,
-    Text,
     useColorModeValue,
   } from '@chakra-ui/react';
+  import { useState } from 'react';
+  import { useForm } from 'react-hook-form';
+  import { useToast } from '@chakra-ui/react';
+  import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+
+
   
   export default function SigninCard() {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const form = useForm({
+      defaultValues: {
+        email: "",
+        password: ""
+      }
+    });
+    const toast = useToast()
+    const { register,handleSubmit, formState } = form;
+
+    const { errors,isDirty } = formState
+    console.log(isDirty);
+
+
+    const onSubmit = (data) => {
+      console.log(data);
+      toast({
+        title: 'Account created.',
+        description: "We've created your account for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
+
+
     return (
       <Stack minH={'100vh'} direction={{ base: 'column', md: 'row' }}>
 
@@ -24,47 +58,75 @@ import {
         justify={'center'}
         bg={useColorModeValue('gray.50', 'gray.800')}>
         <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+        <Image src="/cet_logo.png"  alt="me" bg={"lightsteelblue"} width={"500px"}  borderRadius={"10px"} ></Image>
+
           <Stack align={'center'}>
-            <Heading fontSize={'4xl'}>Sign in to your account</Heading>
-            <Text fontSize={'lg'} color={'gray.600'}>
-              to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
-            </Text>
+            <Heading fontSize={'4xl'}>قم بتسجيل الدخول إلى حسابك</Heading>
           </Stack>
           <Box
             rounded={'lg'}
             bg={useColorModeValue('white', 'gray.700')}
             boxShadow={'lg'}
             p={8}>
-            <Stack spacing={4}>
-              <FormControl id="email">
-                <FormLabel>Email address</FormLabel>
-                <Input type="email" />
-              </FormControl>
-              <FormControl id="password">
-                <FormLabel>Password</FormLabel>
-                <Input type="password" />
-              </FormControl>
-              <Stack spacing={10}>
-                <Stack
-                  direction={{ base: 'column', sm: 'row' }}
-                  align={'start'}
-                  justify={'space-between'}>
-                  <Checkbox>Remember me</Checkbox>
-                  <Link color={'blue.400'}>Forgot password?</Link>
+            <form  onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing={4}>
+                <FormControl id="email">
+                  <FormLabel>البريد الإلكتروني</FormLabel>
+                  <Input type="email" id='email' {...register("email" , {
+                              required: {
+                                value: true,
+                                message: "يجب تعبئة هذا الحقل"
+                              }
+                            })}/>
+                </FormControl>
+                <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
+                <FormControl id="password">
+                  <FormLabel>كلمة المرور</FormLabel>
+                    <InputGroup> 
+                      <Input id="password" type={showPassword ? 'text' : 'password'} {...register("password" , {
+                                      required: {
+                                        value: true,
+                                        message: "يجب تعبئة هذا الحقل"
+                                      }
+                                    })} />
+                    <InputRightElement h={'full'}>
+                      <Button
+                      variant={'ghost'}
+                      onClick={() =>
+                      setShowPassword((showPassword) => !showPassword)
+                      }>
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                      </Button>
+                    </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
+                <Stack spacing={10}>
+                  {/* <Stack
+                    direction={{ base: 'column', sm: 'row' }}
+                    align={'start'}
+                    justify={'space-between'}>
+                    <Checkbox>Remember me</Checkbox>
+                    <Link color={'blue.400'}>Forgot password?</Link>
+                  </Stack> */}
+                  <Button
+                    isDisabled={!isDirty}
+                    type='submit'
+                    loadingText="Submitting"
+                    size="lg"
+                    bg={'blue.400'}
+                    color={'white'}
+                    _hover={{
+                      bg: 'blue.500',
+                    }}>
+                    تسجيل دخول
+                  </Button>
+                  <Link fontWeight={"semibold"} textAlign="center"  href="./signup" >
+                    ليس لديك حساب ؟ 
+                  </Link>
                 </Stack>
-                <Button
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}>
-                  Sign in
-                </Button>
-                <Link textDecor="underline" textAlign="center"  href="./signup" >
-                  Create your account
-                </Link>
               </Stack>
-            </Stack>
+            </form>
           </Box>
         </Stack>
       </Flex>

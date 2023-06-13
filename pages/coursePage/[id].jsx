@@ -11,6 +11,7 @@ import { useState } from 'react';
 import InfoTab from '@/components/InfoTab';
 import AttachementTab from '@/components/AttachementTab';
 import CommentsTab from '@/components/CommentsTab';
+import CourseContentMobile from '@/components/CourseContentMobile';
 
 export default function CoursePage() {
   const [duration, setDuration] = useState(null);
@@ -28,7 +29,7 @@ export default function CoursePage() {
   return (
     <>
     <Navbar/>
-    <Grid templateColumns="repeat(8, 1fr)" bg="gray.50" >
+    <Grid borderTop={"5px solid black"} templateColumns="repeat(8, 1fr)" bg="gray.50" >
         <GridItem
             as="main" 
             colSpan={{ base: 8,lg: 6 }}    
@@ -46,7 +47,7 @@ export default function CoursePage() {
             <Tab display={{base:"grid",md:"none"}} >محتوى الدورة</Tab>
         </TabList>
         <TabPanels  pr='1.5em' minH={"660px"} >
-            <TabPanel>
+            <TabPanel defaultIndex={1}>
               <InfoTab/>
             </TabPanel>
             <TabPanel>
@@ -54,6 +55,9 @@ export default function CoursePage() {
             </TabPanel>
             <TabPanel>
                 <CommentsTab></CommentsTab>
+            </TabPanel>
+            <TabPanel display={{base:"initial",md:"none"}} >
+                <CourseContentMobile></CourseContentMobile>
             </TabPanel>
         </TabPanels>
         </Tabs>
@@ -86,7 +90,7 @@ export default function CoursePage() {
             },}}
         >
         <Box> 
-            <Heading fontSize={"1.7rem"} height={"min-content"} >محتوى الدورة</Heading>    
+            <Heading fontSize={"1.7rem"} padding={"10px"} height={"min-content"} borderBottom={"1px solid black"} >محتوى الدورة</Heading>    
             <OrderedList marginRight={"30px"} >
             <ListItem bg={"cornsilk.300"} 
               _hover={{
