@@ -17,6 +17,7 @@ export default function WithBackgroundImage() {
       }
       backgroundSize={'cover'}
       backgroundPosition={'center center'}>
+        
       <VStack
         w={'full'}
         justify={'center'}
@@ -26,9 +27,12 @@ export default function WithBackgroundImage() {
    
           <Text
             color={'white'}
-            fontWeight={700}
             lineHeight={1.2}
-            fontSize={useBreakpointValue({ base: '3xl', md: '5xl' })}>
+            bgGradient='linear(to-l, blue.100, azure)'
+            bgClip='text'
+            fontSize='6xl'
+            fontWeight='extrabold'
+            >
             منصة كلية التقنية الإلكترونية
           </Text>
           <Stack direction={'row'}>

@@ -14,15 +14,18 @@ import {
     Heading,
     useColorModeValue,
   } from '@chakra-ui/react';
-  import { useState } from 'react';
+  import { useContext, useState } from 'react';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-
+  import { AuthContex } from '@/context/AuthContext';
 
   
   export default function SigninCard() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const { login } = useContext(AuthContext);
 
     const form = useForm({
       defaultValues: {
@@ -39,6 +42,8 @@ import {
 
     const onSubmit = (data) => {
       console.log(data);
+      const jwtToken = "fake-jwt-token";
+      login(jwtToken);
       toast({
         title: 'Account created.',
         description: "We've created your account for you.",

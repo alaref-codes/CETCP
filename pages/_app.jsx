@@ -1,7 +1,8 @@
 import Layout from "../components/layout"
 import { ChakraProvider } from '@chakra-ui/react'
 import '@fontsource/tajawal/300.css'
-import '@fontsource/almarai/300.css';
+import '@fontsource/almarai/400.css';
+import { AuthProvider } from "@/context/AuthContext";
 
 import { extendTheme } from '@chakra-ui/react'
 
@@ -21,16 +22,20 @@ export default function App({ Component, pageProps }) {
   if (Component.getLayout) {
     return Component.getLayout(
     <ChakraProvider theme={theme} >
-      <Component {...pageProps}></Component>
+      <AuthProvider>
+        <Component {...pageProps}></Component>
+      </AuthProvider>
       </ChakraProvider>
       )
   }
 
   return (
     <ChakraProvider theme={theme} >
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <AuthProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </AuthProvider>
     </ChakraProvider>
   )
 }

@@ -3,7 +3,7 @@ import {Grid, GridItem,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel,
 import Loading from '../../components/Loading'
 import useSWR from 'swr';
 import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar'
+import CourseNavbar from '@/components/CourseNavbar'
 import ReactPlayer from 'react-player'
 import { ChakraProvider } from '@chakra-ui/react'
 
@@ -28,7 +28,7 @@ export default function CoursePage() {
 
   return (
     <>
-    <Navbar/>
+    <CourseNavbar/>
     <Grid borderTop={"5px solid black"} templateColumns="repeat(8, 1fr)" bg="gray.50" >
         <GridItem
             as="main" 
@@ -37,14 +37,14 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"} onDuration={onDuration} url='https://www.youtube.com/watch?v=Vmw1C7T0hqY'/>
+            <ReactPlayer height={"500px"} width={"100%"} controls onDuration={onDuration} url='https://www.youtube.com/watch?v=zOjov-2OZ0E'/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
             <Tab>مقدمة</Tab>
             <Tab>مرفقات</Tab>
             <Tab>تعليقات</Tab>
-            <Tab display={{base:"grid",md:"none"}} >محتوى الدورة</Tab>
+            <Tab display={{base:"grid",lg:"none"}} >محتوى الدورة</Tab>
         </TabList>
         <TabPanels  pr='1.5em' minH={"660px"} >
             <TabPanel defaultIndex={1}>

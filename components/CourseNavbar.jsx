@@ -1,37 +1,45 @@
 import {
-    Box,
-    Flex,
-    Text,
-    HStack,
-    IconButton,
-    Button,
-    Stack,
-    Collapse,
-    Icon,
-    Popover,
-    PopoverTrigger,
-    Input,
-    Image,
-    PopoverContent,
-    useColorModeValue,
-    useDisclosure,
-  } from '@chakra-ui/react';
-  import {
-    HamburgerIcon,
-    CloseIcon,
-    ChevronDownIcon,
-    SearchIcon,
-    ChevronRightIcon,
-  } from '@chakra-ui/icons';
-  import { useRouter } from 'next/router';
-  import Link from 'next/link';
+  Box,
+  Flex,
+  Text,
+  HStack,
+  IconButton,
+  Button,
+  Stack,
+  Collapse,
+  Icon,
+  Popover,
+  PopoverTrigger,
+  Input,
+  Menu,
+  MenuButton,
+  Avatar,
+  MenuList,
+  MenuItem,
+  Image,
+  PopoverContent,
+  useColorModeValue,
+  useDisclosure,
+  Heading,
+} from '@chakra-ui/react';
+import {
+  HamburgerIcon,
+  CloseIcon,
+  ChevronDownIcon,
+  SearchIcon,
+  ChevronRightIcon,
+} from '@chakra-ui/icons';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
   
-  import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+
 import { AuthContext } from '@/context/AuthContext';
-import { useState,useContext } from 'react';
+
+import { useState, useContext} from 'react';
   
 
-  export default function Navbar() {
+  export default function CourseNavbar() {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
@@ -52,15 +60,18 @@ import { useState,useContext } from 'react';
     return (
       <Box>
         <Flex
-          bg={useColorModeValue('#4694D0', 'gray.800')}
+          bg={useColorModeValue('gray.700', 'gray.800')}
           color={useColorModeValue('gray.200', 'white')}
           py={{ base: 2 }}
           px={{ base: 4 }}
-          borderBottom={"0.7px"}
+          borderBottom={"0.3px"}
           borderStyle={'solid'}
           borderColor={useColorModeValue('gray.200', 'gray.900')}
-          align={'center'}>
+          align={'center'}
+          boxShadow='2xl '
+          >
           <Flex
+          
             flex={{ base: 1, md: 'auto' }}
             ml={{ base: -2 }}
             display={{ base: 'flex', md: 'none' }}>
@@ -80,13 +91,13 @@ import { useState,useContext } from 'react';
               }
             />
           </Flex>
-          <Flex flex={{ base: 4 }}  justify={{ base: 'center', md: 'start' }} align={"center"} >
+          <Flex flex={{ base: 4 }}  justify={{ base: 'end', md: 'start' }} align={"center"} >
           <Link 
               fontSize={'sm'}
               fontWeight={400}
               href={'/signin'}>
               <Button  color={'black'} display={{base:"flex",md:"none"}}>
-              {isLoggedIn ?  (<Text>العارف</Text>) : (<Text fontSize={"15px"}>تسجيل دخول</Text>)}
+              <Text fontSize={"15px"}>تسجيل دخول</Text>
               </Button>
             </Link>
             <Link
@@ -94,11 +105,11 @@ import { useState,useContext } from 'react';
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-          <Image src="/cet_logo.png"  alt="me" width={{ base:"800px", md:"400px"}} height={"70px"}  borderRadius={"10px"} marginLeft={"20px"} bg={"blackAlpha.50"} ></Image>
+              <Text borderLeft={{base: "none", md: "2px solid gray"}}  borderRight={{base: "2px solid gray", md:"none"}} paddingLeft={{base:"0px",md:"15px"}} marginLeft={{md:"20px"}} letterSpacing={"0.3rem"} fontWeight={"bold"} fontSize={"1.4rem"} color={"white"} >CETEP</Text>
             </Link>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-              <DesktopNav />
+            <Heading  fontWeight={"900"} fontSize={"1rem"} color={"gray.50"} >تعلم أساسيات البرمجة</Heading>
             </Flex>
           </Flex>
   
@@ -117,26 +128,29 @@ import { useState,useContext } from 'react';
             display={{ base: 'none', md: 'inline-flex' }}
 
             spacing={6}>
-            <Link href={"/signup"} >
-              <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
-            </Link>
-            <Link
-              fontWeight={600}
-              href={'/signup'}
-              _hover={{
-                bg: 'blue.300',
-              }}><Button bg={'blue.400'} color={'white'}>
-              <Text fontSize={"15px"}>تسجيل حساب</Text>
-              </Button>
-            </Link>
             <Link 
               fontSize={'sm'}
               fontWeight={400}
-              href={'/signin'}>
+              href={'/'}>
               <Button  color={'black'}>
-              {isLoggedIn ? (<Text>العارف</Text>) : (<Text fontSize={"15px"}>تسجيل دخول</Text>)}
+              <Text fontSize={"15px"}>تسجيل خروج</Text>
               </Button>
             </Link>
+            <Menu>
+              <MenuButton>
+                  <Avatar
+                  size={'sm'}
+                  src={
+                    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                  }
+                />
+              </MenuButton>
+              <MenuList>
+                <Link  href={"/profile/2"}>
+                  <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                </Link>
+              </MenuList>
+            </Menu>
           </Stack>
         </Flex>
   
@@ -361,4 +375,35 @@ import { useState,useContext } from 'react';
 
 
   ];
-  
+//   <Flex alignItems={'center'}>
+//   <Button
+//     variant={'solid'}
+//     colorScheme={'teal'}
+//     size={'sm'}
+//     mr={4}
+//     leftIcon={<AddIcon />}>
+//     Action
+//   </Button>
+//   <Menu>
+//     <MenuButton
+//       as={Button}
+//       rounded={'full'}
+//       variant={'link'}
+//       cursor={'pointer'}
+//       minW={0}>
+      // <Avatar
+      //   size={'sm'}
+      //   src={
+      //     'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+      //   }
+      // />
+//     </MenuButton>
+//     <MenuList>
+//       <MenuItem>Link 1</MenuItem>
+//       <MenuItem>Link 2</MenuItem>
+//       <MenuDivider />
+//       <MenuItem>Link 3</MenuItem>
+//     </MenuList>
+//   </Menu>
+// </Flex>
+// </Flex>
