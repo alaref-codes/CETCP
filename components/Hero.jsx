@@ -2,6 +2,7 @@ import {
   Stack,
   Flex,
   Button,
+  Link,
   Text,
   VStack,
   useBreakpointValue,
@@ -28,14 +29,15 @@ export default function WithBackgroundImage() {
           <Text
             color={'white'}
             lineHeight={1.2}
-            bgGradient='linear(to-l, blue.100, azure)'
+            bgGradient='linear(to-l, blue.50, gold)'
             bgClip='text'
-            fontSize='6xl'
+            fontSize={{base:"4xl",md:'5xl'}}
             fontWeight='extrabold'
             >
-            منصة كلية التقنية الإلكترونية
+            منصة كلية التقنية الإلكترونية - طرابلس التعليمية
           </Text>
           <Stack direction={'row'}>
+          <Link href='#crs' >
             <Button
               bg={'blue.400'}
               rounded="base"
@@ -43,6 +45,7 @@ export default function WithBackgroundImage() {
               _hover={{ bg: 'blue.500' }}>
               تصفح الدورات
             </Button>
+          </Link>
           </Stack>
         </Stack>
       </VStack>

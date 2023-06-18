@@ -27,7 +27,7 @@ export default function SubHeader() {
             <Input required w={{lg:"360px"}} id="search" border="0px solid white"  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
           </HStack>
         </form>
-          </HStack>
+    </HStack>
     </HStack>
     </Box>
 

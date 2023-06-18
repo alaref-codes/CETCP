@@ -8,7 +8,12 @@ import {
     Stack,
     Collapse,
     Icon,
+    Avatar,
     Popover,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
     PopoverTrigger,
     Input,
     Image,
@@ -26,23 +31,48 @@ import {
   import { useRouter } from 'next/router';
   import Link from 'next/link';
   
-  import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { AuthContext } from '@/context/AuthContext';
-import { useState,useContext } from 'react';
-  
+  import { useState,useContext } from 'react';
+  import useSWR from 'swr'
+// import jwt from 'jwt-decode'
+import { useQuery } from '@tanstack/react-query';
 
-  export default function Navbar() {
-    const router = useRouter();
-    const { isOpen, onToggle } = useDisclosure();
-    const [searchIsOpen, setSearchIsOpen] = useState(false);
-    const { isLoggedIn, logout } = useContext(AuthContext);
-    const form = useForm();
-    const { register,handleSubmit } = form;
 
+
+export default function Navbar() {
+  const router = useRouter();
+  const { isOpen, onToggle } = useDisclosure();
+  const [searchIsOpen, setSearchIsOpen] = useState(false);
+  const { isLoggedIn, token, logout } = useContext(AuthContext);
+  console.log(token);
+  console.log(isLoggedIn);
+  const fetchData = async () =>{
+      const response = await fetch("http://38.242.149.102/api/user-show", {
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
+        const jsonData = await response.json();
+        return jsonData
+      }
+      let myData = null;
+      let myIsFetched = null;
+      
+    if (token != null) {
+          console.log("inside the token");
+      const { isLoading,data,error,isError,isFetched,isSuccess } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0
+      })
+      myData = data;
+      myIsFetched = isSuccess
+      console.log(myData);
+    }
 
     const onSubmit = (values) => {
       router.push(`/searchPage/${values.search}`)
 
+    }
+
+    const onLogout = () => {
+      logout();
+      router.push("/signin")
     }
 
     const searchToggle = () => {
@@ -81,21 +111,46 @@ import { useState,useContext } from 'react';
             />
           </Flex>
           <Flex flex={{ base: 4 }}  justify={{ base: 'center', md: 'start' }} align={"center"} >
-          <Link 
-              fontSize={'sm'}
-              fontWeight={400}
-              href={'/signin'}>
-              <Button  color={'black'} display={{base:"flex",md:"none"}}>
-              {isLoggedIn ?  (<Text>العارف</Text>) : (<Text fontSize={"15px"}>تسجيل دخول</Text>)}
-              </Button>
-            </Link>
-            <Link
+          <Link
               textAlign={{ base: 'center', md: 'left' }}
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-          <Image src="/cet_logo.png"  alt="me" width={{ base:"800px", md:"400px"}} height={"70px"}  borderRadius={"10px"} marginLeft={"20px"} bg={"blackAlpha.50"} ></Image>
+          <Image src={"/cet_logo.png"}  alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
+              <Flex display={{ base: 'flex', md: 'none' }}>
+              {isLoggedIn ?  (
+                <Menu>
+                <MenuButton> 
+                <Avatar
+                    size={'md'}
+                    src={
+                      'https://bit.ly/sage-adebayo'
+                    }
+                  />
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>
+                      <Link  href={"/profile/2"}>
+                        <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                      </Link> 
+                    </MenuItem>     
+                    <MenuItem>
+                      <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
+                    </MenuItem>
+                  </MenuList>
+                  </Menu>
+              ) : (
+                <Link 
+                fontSize={'sm'}
+                fontWeight={400}
+                href={'/signin'}>
+                <Button  color={'black'}>
+                <Text fontSize={"15px"}>تسجيل دخول</Text>
+                </Button>
+              </Link>
+              )}
+              </Flex>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
               <DesktopNav />
@@ -117,26 +172,60 @@ import { useState,useContext } from 'react';
             display={{ base: 'none', md: 'inline-flex' }}
 
             spacing={6}>
-            <Link href={"/signup"} >
-              <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
-            </Link>
-            <Link
-              fontWeight={600}
-              href={'/signup'}
-              _hover={{
-                bg: 'blue.300',
-              }}><Button bg={'blue.400'} color={'white'}>
-              <Text fontSize={"15px"}>تسجيل حساب</Text>
-              </Button>
-            </Link>
-            <Link 
-              fontSize={'sm'}
-              fontWeight={400}
-              href={'/signin'}>
-              <Button  color={'black'}>
-              {isLoggedIn ? (<Text>العارف</Text>) : (<Text fontSize={"15px"}>تسجيل دخول</Text>)}
-              </Button>
-            </Link>
+              {myData ? (
+                <Menu>
+                <Text fontSize={"1.4rem"} color={"black"} fontWeight={"bold"}>{myData && myData.data.name}</Text>
+
+                <MenuButton> 
+                <Avatar
+                    size={'md'}
+                    src={
+                      'https://bit.ly/sage-adebayo'
+                    }
+                  />
+                  </MenuButton>
+                  <MenuList>
+                  <Link  href={"/profile/2"}>
+                    <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                  </Link>
+                  <MenuItem>
+                    <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
+                  </MenuItem>
+                  </MenuList>
+                  </Menu>
+
+                 )
+                 : (
+                  <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={'flex-end'}
+                    direction={'row'}
+                    display={{ base: 'none', md: 'inline-flex' }}
+
+                    spacing={6}>
+                    <Link href={"/signup"} >
+                      <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
+                    </Link>
+                    <Link
+                      fontWeight={600}
+                      href={'/signup'}
+                      _hover={{
+                        bg: 'blue.300',
+                      }}><Button bg={'blue.400'} color={'white'}>
+                      <Text fontSize={"15px"}>تسجيل حساب</Text>
+                      </Button>
+                    </Link>
+                    <Link 
+                      fontSize={'sm'}
+                      fontWeight={400}
+                      href={'/signin'}>
+                      <Button  color={'black'}>
+                      <Text fontSize={"15px"}>تسجيل دخول</Text>
+                      </Button>
+                    </Link>
+                  </Stack>
+                 )}
+            
           </Stack>
         </Flex>
   

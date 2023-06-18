@@ -112,15 +112,7 @@ import { useState, useContext} from 'react';
             <Heading  fontWeight={"900"} fontSize={"1rem"} color={"gray.50"} >تعلم أساسيات البرمجة</Heading>
             </Flex>
           </Flex>
-  
-          {/* <HStack flexWrap={{base:"wrap", md:"nowrap" }} spacingy="20px"  display={{base:'none',md:'inline-flex'}} mx={{md:"1%"}} width={{base:"60%",md:"50%",lg:"50%"}} >
-        <form onSubmit={handleSubmit(onSubmit)} >
-          <HStack px="10px" border="1px solid black" borderRadius="10px" >
-            <button><SearchIcon onClick={handleSubmit(onSubmit)} ></SearchIcon></button>
-            <Input required w={{lg:"360px"}} id="search" border="0px solid white"  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
-          </HStack>
-        </form>
-          </HStack> */}
+
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
@@ -139,9 +131,9 @@ import { useState, useContext} from 'react';
             <Menu>
               <MenuButton>
                   <Avatar
-                  size={'sm'}
+                  size={'md'}
                   src={
-                    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                    'https://bit.ly/sage-adebayo'
                   }
                 />
               </MenuButton>

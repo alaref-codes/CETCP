@@ -27,7 +27,7 @@ export default function CourseCardInstructor(props) {
             </CardBody>
 
             <CardFooter>
-            <Button variant='solid' borderRadius={"1px"} colorScheme='blue'>
+            <Button variant='solid' borderRadius={"1px"}>
                 إدارة / تعديل الدورة
             </Button>
             </CardFooter>

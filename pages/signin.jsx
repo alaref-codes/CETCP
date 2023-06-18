@@ -1,31 +1,35 @@
 import {
-    Flex,
-    Box,
-    FormControl,
-    FormLabel,
-    Input,
-    Stack,
-    Text,
-    Link,
-    InputGroup,
-    InputRightElement,
-    Image,
-    Button,
-    Heading,
-    useColorModeValue,
-  } from '@chakra-ui/react';
-  import { useContext, useState } from 'react';
-  import { useForm } from 'react-hook-form';
-  import { useToast } from '@chakra-ui/react';
-  import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-  import { AuthContex } from '@/context/AuthContext';
+  Flex,
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  Text,
+  Link,
+  InputGroup,
+  InputRightElement,
+  Image,
+  Button,
+  Heading,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { useContext, useState,useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useToast } from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { AuthContext } from '@/context/AuthContext';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
-  
+import { useRouter } from 'next/router';
+    
   export default function SigninCard() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { login } = useContext(AuthContext);
+    const router = useRouter();
 
     const form = useForm({
       defaultValues: {
@@ -33,25 +37,58 @@ import {
         password: ""
       }
     });
+
+    const url = "http://38.242.149.102/api/login"
+
+
+    const createUser = async ({variables}) =>{
+      return axios.post(url,{
+        email:variables.email,
+        password:variables.password,
+      }).then(res => res.data)
+    }
+
     const toast = useToast()
     const { register,handleSubmit, formState } = form;
 
     const { errors,isDirty } = formState
-    console.log(isDirty);
 
+    const mutation = useMutation({
+      mutationFn: createUser,
+      onSuccess: (data) => {
+        toast({
+          title: 'تم تسجيل الدخول',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+        login(data.data.token)
+        router.push("/")
+      },
+
+      onError: () => {
+        toast({
+          title: 'الرجاء التأكد من البريد الإلكتروني وكلمة المرور',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+  
+      }
+      })
 
     const onSubmit = (data) => {
-      console.log(data);
-      const jwtToken = "fake-jwt-token";
-      login(jwtToken);
-      toast({
-        title: 'Account created.',
-        description: "We've created your account for you.",
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      })
+      mutation.mutate({variables:data})
     }
+
+
+    // if (mutation.isSuccess) {
+      // login(mutation.data.data.token)
+    // }  
+
+    // if (mutation.error) {
+    //   console.log(mutation.error.response.data.message);
+    // }
 
 
     return (
@@ -67,6 +104,7 @@ import {
 
           <Stack align={'center'}>
             <Heading fontSize={'4xl'}>قم بتسجيل الدخول إلى حسابك</Heading>
+            <Text color={"red"} fontSize={"20px"} >{mutation.isError && mutation.error.response.data.message}</Text>
           </Stack>
           <Box
             rounded={'lg'}
@@ -115,7 +153,7 @@ import {
                     <Link color={'blue.400'}>Forgot password?</Link>
                   </Stack> */}
                   <Button
-                    isDisabled={!isDirty}
+                    isDisabled={mutation.isLoading}
                     type='submit'
                     loadingText="Submitting"
                     size="lg"

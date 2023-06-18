@@ -19,40 +19,82 @@
     Link,
     VStack,
   } from '@chakra-ui/react';
-  import { useState } from 'react';
+  import { useContext, useState } from 'react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
-
+  import { useMutation, useQueryClient } from '@tanstack/react-query';
+  import { AuthContext } from '@/context/AuthContext';
+  import { useRouter } from 'next/router';
+  import axios from 'axios';
   
   export default function Signup() {
+    const [topping, setTopping] = useState("1")
+
     const [value, setValue] = useState('1')
     const [showPassword, setShowPassword] = useState(false);
+    const { login } = useContext(AuthContext);
+    const router = useRouter();
+    const toast = useToast()
+
+    const url = "http://38.242.149.102/api/register"
+
     const form = useForm({
       defaultValues: {
         username: "",
-        lastName: "",
         email: "",
-        password: ""
+        password: "",
+        number: "",        
       }
     });
-    const toast = useToast()
+
+    const onOptionChange = e => {
+      setTopping(e.target.value)
+    }
+
+    const createUser = async ({variables}) =>{
+
+      return axios.post(url,{
+        name: variables.username,
+        email:variables.email,
+        password:variables.password,
+        password_confirmation: variables.password,
+        gender: variables.gender,
+        phone: variables.number,
+        type: "student"
+      }).then(res => res.data)
+
+    }
+  
     const { register,handleSubmit, formState } = form;
 
-    const { errors,isDirty } = formState
-    console.log(isDirty);
+    const { errors } = formState
 
+    const mutation = useMutation({
+      mutationFn: createUser,
+      retry: 2,
+      })
+
+    console.log("_______");
+    console.log(mutation.data);
 
     const onSubmit = (data) => {
-      console.log(data);
+      mutation.mutate({variables:data})
+    }
+
+    if (mutation.isSuccess) {
+      login(mutation.data.data.token)
+      router.push("/")
+
+
       toast({
-        title: 'Account created.',
-        description: "We've created your account for you.",
+        title: 'تم تسجيل الدخول بنجاج',
         status: 'success',
         duration: 9000,
         isClosable: true,
       })
     }
+
     return (
       <Stack minH={'100vh'}  direction={{ base: 'column', md: 'row' }}>
         <Flex
@@ -64,8 +106,7 @@
         <VStack>
         <Image src="/cet_logo.png"  alt="me" bg={"lightsteelblue"} width={"500px"}  borderRadius={"10px"} ></Image>
           <Stack spacing={2} mx={'auto'} maxW={'lg'} py={12} px={6}>
-
-            <Box
+            <Box 
               rounded={'lg'}
               bg={useColorModeValue('white', 'gray.700')}
               boxShadow={'lg'}
@@ -99,6 +140,7 @@
                                   }
                                 })}></Input>
                                 <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
+                                <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.phone}</Text>
                           </FormControl>
                       </Box>
                     </HStack>
@@ -116,12 +158,39 @@
                                 })} />
                     </FormControl>
                     <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
+                    <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.email}</Text>
+
                     <FormControl>
-                        <FormLabel  htmlFor='phone' >الجنس</FormLabel>
-                      <RadioGroup onChange={setValue} value={value}>
+                      <FormLabel  htmlFor='gender' >الجنس</FormLabel>
+                      <RadioGroup id='gender' onChange={setValue} value={value} {...register("gender", {
+                        required: {
+                          value: true,
+                          message: "يجب تعبئة هذا الحقل"
+                        }
+                      })} >
                       <Stack direction='row'>
-                        <Radio colorScheme='blue' value='1'>ذكر</Radio>
-                        <Radio colorScheme='pink' value='2'>أنثى</Radio>
+                      <input
+                        type="radio"
+                        name="topping"
+                        value="1"
+                        id="1"
+                        checked={topping === "1"}
+                        onChange={onOptionChange}
+
+                      />
+                      <label htmlFor="male">ذكر</label>
+
+                      <input
+                        type="radio"
+                        name="topping"
+                        value="2"
+                        id="2"
+                        checked={topping === "2"}
+                        onChange={onOptionChange}
+
+                      />
+                      <label htmlFor="female">أنثى</label>
+
                       </Stack>
                     </RadioGroup>
                   </FormControl>
@@ -152,7 +221,7 @@
                   </FormControl>
                 <Stack spacing={10} pt={2}>
                   <Button
-                    isDisabled={!isDirty}
+                    isDisabled={mutation.isLoading}
                     type='submit'
                     loadingText="Submitting"
                     size="lg"

@@ -15,7 +15,37 @@ import {
   } from '@chakra-ui/react';
   import { SmallCloseIcon } from '@chakra-ui/icons';
   
+  import { AuthContext } from '@/context/AuthContext';
+
+
+import { 
+  useQuery,
+  useQueryClient
+ } from '@tanstack/react-query';
+
+ import { useState,useContext } from 'react';
+
   export default function ProfilePage() {
+    const { isLoggedIn, token } = useContext(AuthContext);
+    const queryClient = useQueryClient()
+
+    const fetchData = async () =>{
+      const response = await fetch("http://38.242.149.102/api/user-show", {
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
+      const jsonData = await response.json();
+      return jsonData
+
+    }
+
+    let myData = null;
+    const { isLoading,data,error,isError,isFetched } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0, staleTime: 0
+    })
+    console.log(data);
+    if (isError) {
+      console.log(error);
+    }
+    myData = data;
+
     return (
       <Flex
         minH={'90vh'}
@@ -38,7 +68,7 @@ import {
             <FormLabel>User Icon</FormLabel>
             <Stack direction={['column', 'row']} spacing={6}>
               <Center>
-                <Avatar size="xl" src="https://bit.ly/sage-adebayo">
+                <Avatar size="xl" src="/">
                   <AvatarBadge
                     as={IconButton}
                     size="sm"
@@ -58,7 +88,7 @@ import {
           <FormControl id="userName" isRequired>
             <FormLabel>اسم المستخدم</FormLabel>
             <Input
-              placeholder=""
+              placeholder={"randomtext"}
               _placeholder={{ color: 'gray.500' }}
               type="text"
             />

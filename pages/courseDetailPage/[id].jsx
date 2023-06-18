@@ -1,8 +1,9 @@
 import Loading from '../../components/Loading'
 import { useRouter } from 'next/router';
-import React from 'react';
+import {React,useRef} from 'react';
 import useSWR from 'swr';
-
+import axios from 'axios';
+import NotFound from '../notFound';
 import {
     Box,
     Container,
@@ -20,20 +21,22 @@ import {
     useColorModeValue,
     List,
     ListItem,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, ChakraBaseProvider 
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ChakraBaseProvider 
   } from '@chakra-ui/react';
-  
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+
+  const fetcher = async (url) => await axios.get(url).then((res) => res.data);
   export default function CourseDetailPage() {
-    const initialRef = React.useRef(null)
-    const finalRef = React.useRef(null)  
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const router = useRouter();
-    const { data, error, isLoading } = useSWR(`http://localhost:5000/courses/${router.query.id}`, fetcher)
+    const { data, error,isLoading } = useSWR(`http://38.242.149.102/api/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
+    const initialRef = useRef(null)
+    const finalRef = useRef(null)  
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
 
     if (isLoading) return <Loading></Loading>;
-    if (!data) return <Loading></Loading>;
-    console.log(data);
+    if (error) {
+      return <NotFound/>
+    }
     return (
       <Container  maxW={'7xl'}>
         <SimpleGrid
@@ -44,7 +47,7 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
             <Image
               rounded={'md'}
               alt={'course image'}
-              src={data.image}
+              src={data.data.image ? `http://38.242.149.102/storage/courses-images/${data.data.image}` : 'https://bit.ly/sage-adebayo'}
               fit={'cover'}
               align={'center'}
               w={'100%'}
@@ -57,19 +60,19 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
                 lineHeight={1.1}
                 fontWeight={600}
                 fontSize={{ base: '2xl', sm: '4xl', lg: '5xl' }}>
-                {data.name}
+                {data && data.data.name}
               </Heading>
               <Text
                 color={useColorModeValue('gray.900', 'gray.400')}
                 fontWeight={300}
                 fontSize={'2xl'}>
-                {data.instructor}
+                {data.data.instructor}
               </Text>
               <Text
                 color={useColorModeValue('gray.900', 'gray.400')}
                 fontWeight={300}
                 fontSize={'2xl'}>
-                350.00 د.ل
+                {data.data.price}
               </Text>
             </Box>
   
@@ -83,7 +86,7 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
               }>
               <VStack spacing={{ base: 4, sm: 6 }}>
                 <Text fontSize={'lg'}>
-                  {data.description}
+                  {data.data.description}
                 </Text>
               </VStack>
               <Box>
@@ -141,9 +144,9 @@ const fetcher = (...args) => fetch(...args).then(res => res.json())
                 <ModalHeader mr="40px" >إتمام عملية الشراء</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
-                  <Heading>الدورة: {data.name}</Heading>
-                  <chakra.p>المدرب: {data.instructor}</chakra.p>
-                  <Text as="h4">تكلفة الدورة: {data.cost}</Text>
+                  <Heading>الدورة: {data.data.name}</Heading>
+                  <chakra.p>المدرب: {data.data.instructor}</chakra.p>
+                  <Text as="h4">تكلفة الدورة: {data.data.cost}</Text>
                   <Text as="h4">رصيدك الحالي: 333</Text>
                 </ModalBody>
 

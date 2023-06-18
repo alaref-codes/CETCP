@@ -1,4 +1,4 @@
-import { Flex,Box,Image,Icon,chakra} from '@chakra-ui/react'
+import { Flex,Box,Image,Icon,chakra, Img} from '@chakra-ui/react'
 import Link from 'next/link'
 export default function CourseCard(props) {
   return (
@@ -29,7 +29,7 @@ export default function CourseCard(props) {
         h="150px"
         fit="cover"
         objectPosition="center"
-        src={props.course.image}
+        src={`http://38.242.149.102/storage/courses-images/${props.course.image}`}
         alt="avatar"
         />
 
@@ -50,10 +50,10 @@ export default function CourseCard(props) {
             color="gray.700"
 
         >
-             {props.course.instructor}
+             {props.course.trainer_name}
         </chakra.p>
         {props.withDescription && <chakra.p py={2} color="gray.700" _dark={{ color: "gray.400" }} >
-            {props.course.description}
+            {props.course.header}
         </chakra.p> }
 
         </Box>
