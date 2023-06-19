@@ -73,26 +73,21 @@
     const mutation = useMutation({
       mutationFn: createUser,
       retry: 2,
-      })
+      onSuccess: (data) => {
+        toast({
+          title: 'تم تسجيل الدخول',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+        login(data.data.token)
+        router.push("/")
+      },
 
-    console.log("_______");
-    console.log(mutation.data);
+      })
 
     const onSubmit = (data) => {
       mutation.mutate({variables:data})
-    }
-
-    if (mutation.isSuccess) {
-      login(mutation.data.data.token)
-      router.push("/")
-
-
-      toast({
-        title: 'تم تسجيل الدخول بنجاج',
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
-      })
     }
 
     return (

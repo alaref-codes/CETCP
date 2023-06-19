@@ -33,7 +33,6 @@ export default function CourseCard(props) {
         alt="avatar"
         />
 
-
         <Box py={4} px={6}>
         <chakra.h1
             fontSize="xl"

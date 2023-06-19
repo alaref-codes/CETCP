@@ -26,8 +26,6 @@ import { useRouter } from 'next/router';
     
   export default function SigninCard() {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const { login } = useContext(AuthContext);
     const router = useRouter();
 
@@ -51,7 +49,7 @@ import { useRouter } from 'next/router';
     const toast = useToast()
     const { register,handleSubmit, formState } = form;
 
-    const { errors,isDirty } = formState
+    const { errors } = formState
 
     const mutation = useMutation({
       mutationFn: createUser,

@@ -33,51 +33,62 @@ import {
   
 import { useForm } from 'react-hook-form';
 import { AuthContext } from '@/context/AuthContext';
-  import { useState,useContext } from 'react';
+  import { useState,useContext,useEffect } from 'react';
   import useSWR from 'swr'
 // import jwt from 'jwt-decode'
 import { useQuery } from '@tanstack/react-query';
 
+import axios from 'axios'
 
+
+function getList(token) {
+  return fetch("http://38.242.149.102/api/user-show", {
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
 
 export default function Navbar() {
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
   const [searchIsOpen, setSearchIsOpen] = useState(false);
   const { isLoggedIn, token, logout } = useContext(AuthContext);
-  console.log(token);
-  console.log(isLoggedIn);
-  const fetchData = async () =>{
-      const response = await fetch("http://38.242.149.102/api/user-show", {
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
-        const jsonData = await response.json();
-        return jsonData
-      }
-      let myData = null;
-      let myIsFetched = null;
-      
-    if (token != null) {
-          console.log("inside the token");
-      const { isLoading,data,error,isError,isFetched,isSuccess } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0
-      })
-      myData = data;
-      myIsFetched = isSuccess
-      console.log(myData);
-    }
+  const [myData, setMyData] = useState(undefined);
 
+  useEffect(() => {
+    if (token) {
+    getList(token)
+    .then(data => {
+      setMyData(data)
+    })
+  }
+  }, []);
+
+
+    console.log(myData);
+    // let myData = null;
+    // let myIsFetched = null;
+    
     const onSubmit = (values) => {
       router.push(`/searchPage/${values.search}`)
 
+    }
+
+    const searchToggle = () => {
+      setSearchIsOpen(!searchIsOpen)
     }
 
     const onLogout = () => {
       logout();
       router.push("/signin")
     }
+  
+      // const { isLoading,data,error,isError,isFetched,isSuccess } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0
+      // })
+      // myData = data;
+      // myIsFetched = isSuccess
+      // console.log(myData);
+  
 
-    const searchToggle = () => {
-      setSearchIsOpen(!searchIsOpen)
-    }
 
     return (
       <Box>
@@ -119,7 +130,7 @@ export default function Navbar() {
           <Image src={"/cet_logo.png"}  alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
               <Flex display={{ base: 'flex', md: 'none' }}>
-              {isLoggedIn ?  (
+              {isLoggedIn &&  (
                 <Menu>
                 <MenuButton> 
                 <Avatar
@@ -140,15 +151,6 @@ export default function Navbar() {
                     </MenuItem>
                   </MenuList>
                   </Menu>
-              ) : (
-                <Link 
-                fontSize={'sm'}
-                fontWeight={400}
-                href={'/signin'}>
-                <Button  color={'black'}>
-                <Text fontSize={"15px"}>تسجيل دخول</Text>
-                </Button>
-              </Link>
               )}
               </Flex>
   
@@ -243,7 +245,17 @@ export default function Navbar() {
     const linkColor = useColorModeValue('gray.900', 'gray.500');
     const linkHoverColor = useColorModeValue('blue.900', 'blue');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
-  
+    
+
+    const fetcher = async (url) => await axios.get(url).then((res) => res.data);
+
+    const { data, error,isLoading } = useSWR('http://38.242.149.102/api/categories', fetcher, {refreshInterval:1000});
+    if (isLoading) return <Text>Loading...</Text>;
+    if (error) { 
+      console.log(error);
+    }
+    NAV_ITEMS[0].children = data.data;
+    console.log(NAV_ITEMS.children);
     return (
       <Stack direction={'row'} spacing={4}>
         {NAV_ITEMS.map((navItem) => (
@@ -273,7 +285,7 @@ export default function Navbar() {
                   minW={'sm'}>
                   <Stack>
                     {navItem.children.map((child) => (
-                      <DesktopSubNav key={child.label} {...child} />
+                      <DesktopSubNav key={child.name} {...child} />
                     ))}
                   </Stack>
                 </PopoverContent>
@@ -285,10 +297,10 @@ export default function Navbar() {
     );
   };
   
-  const DesktopSubNav = ({ label, href, subLabel }) => {
+  const DesktopSubNav = ({ name }) => {
     return (
       <Link
-        href={href}
+        href={"/"}
         role={'group'}
         display={'block'}
         p={2}
@@ -301,9 +313,8 @@ export default function Navbar() {
               transition={'all .3s ease'}
               _groupHover={{ color: 'pink.400' }}
               fontWeight={500}>
-              {label}
+              {name}
             </Text>
-            <Text fontSize={'sm'}>{subLabel}</Text>
           </Box>
           <Flex
             transition={'all .3s ease'}
@@ -346,8 +357,18 @@ export default function Navbar() {
     );
   };
   
+  const nfetcher = async (url) => await axios.get(url).then((res) => res.data);
 
   const MobileNav = () => {
+    const { data, error,isLoading } = useSWR('http://38.242.149.102/api/categories', nfetcher, {refreshInterval:1000});
+
+    if (isLoading) return <Text>Loading...</Text>;
+    if (error) { 
+      console.log(error);
+    }
+
+    NAV_ITEMS[0].children = data.data;
+
     return (
       <Stack
         bg={useColorModeValue('white', 'gray.800')}
@@ -364,8 +385,10 @@ export default function Navbar() {
     const { isOpen, onToggle } = useDisclosure();
   
     return (
-      <Stack spacing={4} onClick={children && onToggle}>
+      <Stack spacing={4} >
+        <Link href={"/signin"}><Text fontWeight={"bold"} >تسجيل الدخول</Text></Link>
         <Flex
+          onClick={children && onToggle}
           py={2}
           as={Link}
           href={href ?? '#'}
@@ -393,7 +416,6 @@ export default function Navbar() {
             
           )}
         </Flex>
-  
         <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>
           <Stack
             mt={2}
@@ -404,49 +426,24 @@ export default function Navbar() {
             align={'start'}>
             {children &&
               children.map((child) => (
-                <Link key={child.label} py={2} href={child.href}>
-                  {child.label}
+                <Link key={child.name} py={2} href={"/"}>
+                  {child.name}
                 </Link>
               ))}
+              
           </Stack>
         </Collapse>
       </Stack>
     );
   };
   
-  
-  
+
   const NAV_ITEMS = [
     {
       label: 'الفئات',
-      children: [
-
-        {
-          label: 'هندسة البرمجيات',
-          href: '#',
-        },
-        {
-          label: 'اتصالات',
-          href: '#',
-        },
-        {
-          label: 'تحكم آلي',
-          href: '#',
-        },
-      ],
+      children: null,
+      href: null
     },
-    // {
-    //   label: "تسجيل دخول",
-    //   href:"/signin"
-    // },
-    // {
-    //   label: "تسجيل حساب",
-    //   href:"/signup"
-    // },
-    // {
-    //   label: "تسجيل كمدرب",
-    //   href:"/signin"
-    // }
 
 
   ];

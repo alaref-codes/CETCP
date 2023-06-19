@@ -15,11 +15,11 @@ export default function CoursesCards() {
 
   if (isLoading) return <Loading></Loading>;
   if (error) {
+
     return <NotFound/>
   }
 
   return (
-     // <Slider {...settings}>
       <>
       {isLoading == true ? <Loading></Loading> : <Flex wrap="nowrap" overflowX="scroll" minChildWidth="280px" spacingY="3px" >
       {data && data.data.data.map(course => (
