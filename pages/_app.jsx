@@ -27,25 +27,25 @@ export default function App({ Component, pageProps }) {
 
   if (Component.getLayout) {
     return Component.getLayout(
-      <QueryClientProvider client={queryClient}>
-        <ChakraProvider theme={theme} >
-          <AuthProvider>
-            <Component {...pageProps}></Component>
-          </AuthProvider>
-        </ChakraProvider>
-      </QueryClientProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <ChakraProvider theme={theme} >
+              <Component {...pageProps}></Component>
+          </ChakraProvider>
+        </QueryClientProvider>
+      </AuthProvider>
       )
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-    <ChakraProvider theme={theme} >
-      <AuthProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </AuthProvider>
-    </ChakraProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+      <ChakraProvider theme={theme} >
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+      </ChakraProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   )
 }

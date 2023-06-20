@@ -13,7 +13,7 @@ export default function SubHeader() {
   const { register,handleSubmit } = form;
 
   const onSubmit = (values) => {
-    router.push(`/searchPage/${values.search}`)
+    router.push(`/courses/search/${values.search}`)
 
   }
 

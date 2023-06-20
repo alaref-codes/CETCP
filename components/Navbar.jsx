@@ -35,15 +35,19 @@ import { useForm } from 'react-hook-form';
 import { AuthContext } from '@/context/AuthContext';
   import { useState,useContext,useEffect } from 'react';
   import useSWR from 'swr'
-// import jwt from 'jwt-decode'
-import { useQuery } from '@tanstack/react-query';
 
 import axios from 'axios'
 
 
-function getList(token) {
-  return fetch("http://38.242.149.102/api/user-show", {
+async function getUserData(token) {
+  return await fetch("http://38.242.149.102/api/user-show", {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
+
+async function logoutCall(token) {
+  return await fetch("http://38.242.149.102/api/user-logout", {
+    headers: {'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
 }
 
@@ -51,37 +55,45 @@ export default function Navbar() {
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
   const [searchIsOpen, setSearchIsOpen] = useState(false);
-  const { isLoggedIn, token, logout } = useContext(AuthContext);
+  const { isLoggedIn, token, logout,login } = useContext(AuthContext);
   const [myData, setMyData] = useState(undefined);
 
+
   useEffect(() => {
-    if (token) {
-    getList(token)
-    .then(data => {
-      setMyData(data)
-    })
-  }
-  }, []);
-
-
-    console.log(myData);
-    // let myData = null;
-    // let myIsFetched = null;
-    
-    const onSubmit = (values) => {
-      router.push(`/searchPage/${values.search}`)
-
-    }
-
-    const searchToggle = () => {
-      setSearchIsOpen(!searchIsOpen)
-    }
-
-    const onLogout = () => {
-      logout();
-      router.push("/signin")
-    }
+    if (!isLoggedIn) {
+      
+      const storedToken = localStorage.getItem("token")
+      console.log("token from storage");
+      console.log(storedToken);
   
+      if (storedToken != null) {
+        localStorage.setItem("token", storedToken)
+        login(storedToken)
+      }
+    } else {
+      getUserData(token)
+      .then(data => {
+        setMyData(data)
+      })      
+    }
+   }, []);
+
+  const onSubmit = (values) => {
+    router.push(`/searchPage/${values.search}`)
+
+  }
+
+  const searchToggle = () => {
+    setSearchIsOpen(!searchIsOpen)
+  }
+
+  const onLogout = () => {
+    logoutCall(token);
+    localStorage.setItem("token", null)
+    logout();
+    router.push("/signin")
+  }
+
       // const { isLoading,data,error,isError,isFetched,isSuccess } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0
       // })
       // myData = data;
@@ -177,7 +189,6 @@ export default function Navbar() {
               {myData ? (
                 <Menu>
                 <Text fontSize={"1.4rem"} color={"black"} fontWeight={"bold"}>{myData && myData.data.name}</Text>
-
                 <MenuButton> 
                 <Avatar
                     size={'md'}
@@ -241,15 +252,18 @@ export default function Navbar() {
     );
   }
   
+  const fetcher = async (url) => await axios.get(url).then((res) => res.data);
+
+  const getCategories = () => {
+    return useSWR('http://38.242.149.102/api/categories', fetcher, {refreshInterval:1000});
+  }
+
   const DesktopNav = () => {
     const linkColor = useColorModeValue('gray.900', 'gray.500');
     const linkHoverColor = useColorModeValue('blue.900', 'blue');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
     
-
-    const fetcher = async (url) => await axios.get(url).then((res) => res.data);
-
-    const { data, error,isLoading } = useSWR('http://38.242.149.102/api/categories', fetcher, {refreshInterval:1000});
+    const { data, error,isLoading } = getCategories()
     if (isLoading) return <Text>Loading...</Text>;
     if (error) { 
       console.log(error);
@@ -297,10 +311,10 @@ export default function Navbar() {
     );
   };
   
-  const DesktopSubNav = ({ name }) => {
+  const DesktopSubNav = ({ name,id }) => {
     return (
       <Link
-        href={"/"}
+        href={`/courses/byCategory/${id}`}
         role={'group'}
         display={'block'}
         p={2}
@@ -338,7 +352,7 @@ export default function Navbar() {
 
     const onSubmit = (values) => {
       console.log(values);
-      router.push(`/searchPage/${values.search}`)
+      router.push(`/courses/search/${values.search}`)
 
     }
 
@@ -357,10 +371,9 @@ export default function Navbar() {
     );
   };
   
-  const nfetcher = async (url) => await axios.get(url).then((res) => res.data);
 
   const MobileNav = () => {
-    const { data, error,isLoading } = useSWR('http://38.242.149.102/api/categories', nfetcher, {refreshInterval:1000});
+    const { data, error,isLoading } = getCategories()
 
     if (isLoading) return <Text>Loading...</Text>;
     if (error) { 
@@ -382,11 +395,12 @@ export default function Navbar() {
   };
   
   const MobileNavItem = ({ label, children, href }) => {
+    const { isLoggedIn } = useContext(AuthContext);
     const { isOpen, onToggle } = useDisclosure();
   
     return (
       <Stack spacing={4} >
-        <Link href={"/signin"}><Text fontWeight={"bold"} >تسجيل الدخول</Text></Link>
+        {!isLoggedIn && <Link href={"/signin"}><Text fontWeight={"bold"} >تسجيل الدخول</Text></Link>}
         <Flex
           onClick={children && onToggle}
           py={2}
@@ -444,6 +458,11 @@ export default function Navbar() {
       children: null,
       href: null
     },
+    {
+      label: 'الدورات',
+      children: null,
+      href: "/myCourses"
+    }
 
 
   ];

@@ -1,26 +1,34 @@
-import CourseSearchCard from '../../components/CourseSearchCard'
+import CourseSearchCard from '@/components/CourseSearchCard'
 import { Box, Heading,HStack,Input, VStack } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons';
 import React from 'react'
 import { useRouter } from 'next/router';
 import useSWR from 'swr'
-  
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
+import NotFound from '@/pages/notFound';
+import Loading from '@/components/Loading';
+
+const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
 
 export default function SearchPage() {
     const router = useRouter();
-    const fetcher = (...args) => fetch(...args).then(res => res.json())
-    const { data, error, isLoading } = useSWR('http://localhost:5000/courses', fetcher)
+    const { data, error, isLoading } = useSWR(`http://38.242.149.102/api/courses?contains[name]=${router.query.slug}&contains[description]=${router.query.slug}&contains[header]=${router.query.slug}`, fetcher)
     const form = useForm();
     const { register,handleSubmit } = form;
 
 
     const onSubmit = (values) => {
-      router.push(`/searchPage/${values.search}`)
+      router.push(`/courses/search/${values.search}`)
 
     }
 
+
+    if (isLoading) return <Loading></Loading>;
+    if (error) {
+      return <NotFound/>
+    }
     return (
         <Box width={{base:"100%",md:"80%"}} margin="50px auto" >
         <Box marginRight={"10px"} marginBottom={"30px"} width={"70%"} >
@@ -32,7 +40,7 @@ export default function SearchPage() {
             </form>
         </Box>
         <Heading>نتائج البحث عن : "{router.query.slug}"</Heading>
-        {data && data.map(course => (
+        {data && data.data.data.map(course => (
             <CourseSearchCard key={course.id} course={course} ></CourseSearchCard>
         ))}
         </Box>

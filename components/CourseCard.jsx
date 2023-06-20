@@ -29,6 +29,7 @@ export default function CourseCard(props) {
         h="150px"
         fit="cover"
         objectPosition="center"
+        loading='lazy'
         src={`http://38.242.149.102/storage/courses-images/${props.course.image}`}
         alt="avatar"
         />

@@ -4,7 +4,6 @@ import Hero from '../components/Hero'
 import CoursesCards from '@/components/CoursesCards'
 import SubHeader from '@/components/SubHeader'
 import { Box } from '@chakra-ui/react'
-
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {

@@ -1,5 +1,4 @@
-import { createContext, useState } from "react";
-
+import { createContext, useState,useEffect } from "react";
 const AuthContext = createContext();
 
 function AuthProvider(props) {
@@ -7,9 +6,8 @@ function AuthProvider(props) {
   const [token, setToken] = useState(null);
 
   const login = (jwtToken) => {
-    setIsLoggedIn(true);
+    setIsLoggedIn(true);  
     setToken(jwtToken);
-
   };
 
   const logout = () => {
@@ -23,6 +21,7 @@ function AuthProvider(props) {
     login,
     logout,
   };
+
 
   return <AuthContext.Provider value={value} {...props} />;
 }

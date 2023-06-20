@@ -14,7 +14,7 @@ import {
   Heading,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useContext, useState,useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
@@ -60,6 +60,7 @@ import { useRouter } from 'next/router';
           duration: 9000,
           isClosable: true,
         })
+        localStorage.setItem("token",data.data.token)
         login(data.data.token)
         router.push("/")
       },
