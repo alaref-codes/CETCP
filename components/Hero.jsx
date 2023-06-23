@@ -13,6 +13,7 @@ export default function WithBackgroundImage() {
     <Flex
       w={'full'}
       h={'80vh'}
+      // backgroundImage={"https://v4.cdnpk.net/videvo_files/video/free/video0467/large_watermarked/_import_615163540096e1.68968110_FPpreview.mp4"}
       backgroundImage={
         'url(https://img.freepik.com/free-photo/3d-render-low-poly-plexus-design-network-communications_1048-14542.jpg?w=996&t=st=1684876599~exp=1684877199~hmac=f34edc24dc82342886a05a03443c80443221a1afc2c2bc907530e12564942ba4)'
       }
@@ -23,7 +24,7 @@ export default function WithBackgroundImage() {
         w={'full'}
         justify={'center'}
         px={useBreakpointValue({ base: 4, md: 8 })}
-        bgGradient={'linear(to-r, blackAlpha.600, transparent)'}>
+        bgGradient={'linear(to-l, blackAlpha.800, transparent)'}>
         <Stack maxW={'2xl'} align={'flex-start'} spacing={6}>
    
           <Text

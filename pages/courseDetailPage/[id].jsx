@@ -23,11 +23,13 @@ import {
     ListItem,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ChakraBaseProvider 
   } from '@chakra-ui/react';
+  import * as URL from "@/constants"
+
 
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
   export default function CourseDetailPage() {
     const router = useRouter();
-    const { data, error,isLoading } = useSWR(`http://38.242.149.102/api/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
+    const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
     const initialRef = useRef(null)
     const finalRef = useRef(null)  
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -47,8 +49,8 @@ import {
             <Image
               rounded={'md'}
               alt={'course image'}
-              src={data.data.image ? `http://38.242.149.102/storage/courses-images/${data.data.image}` : 'https://bit.ly/sage-adebayo'}
-              fit={'cover'}
+              src={data.data.image ? `${URL.STORAGE_URL}/${data.data.image}` : 'https://bit.ly/sage-adebayo'}
+              objectFit={'cover'}
               align={'center'}
               w={'100%'}
               h={{ base: '100%', sm: '400px', lg: '500px' }}

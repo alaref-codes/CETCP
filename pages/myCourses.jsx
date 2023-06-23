@@ -5,6 +5,7 @@ import { useContext,useEffect,useState } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import Loading from '@/components/Loading';
 import NotFound from './notFound';
+import * as URL from "@/constants"
 
 // const fetcher = async (url,token) => await axios.get(url, {headers: {Authorization : `Bearer ${token}`}}).then((res) => res.data);
 
@@ -16,7 +17,7 @@ import NotFound from './notFound';
 
 
 async function getMyCourses(token) {
-  return await fetch("http://38.242.149.102/api/courses-students", {
+  return await fetch(`${URL.API_URL}/courses-students`, {
     headers: {'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
 }
@@ -28,7 +29,6 @@ export default function myCourses() {
 
 
   // console.log(token);
-  const url = "http://38.242.149.102/api/courses-students";
   
   // if (token) {
 
@@ -65,7 +65,7 @@ export default function myCourses() {
     
     <SimpleGrid width={"80%"} marginRight={"0px"} minChildWidth={"250px"} columns={"3"}  >
           {data && data.data.data.map(course => (
-          <CourseCard  eCard key={course.id} withDescription={false}  course={course} />
+          <CourseCard  key={course.id} withDescription={false}  course={course} payed={true} />
           ))}
     </SimpleGrid>
 

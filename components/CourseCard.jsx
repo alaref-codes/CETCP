@@ -1,40 +1,42 @@
-import { Flex,Box,Image,Icon,chakra, Img} from '@chakra-ui/react'
+import { Flex,Box,Image,Icon,chakra, Img, Button, Divider} from '@chakra-ui/react'
 import Link from 'next/link'
+import * as URL from "@/constants"
+
 export default function CourseCard(props) {
   return (
-    <Link href={`/courseDetailPage/${props.course.id}`} >
+    <Link href={props.payed ? `/coursePage/${props.course.id}` : `/courseDetailPage/${props.course.id}`} >
             <Box w={{base:"300px", md:"full"}}>
             <Flex
-        _dark={{
-        bg: "#3e3e3e",
-        }}
-        p={5}
-        w="100%"
-        alignItems="center"
-        justifyContent="center"
-        >
-        <Box
-        h="-moz-min-content"
-        w="300px"
-        mx="10px"
-        _dark={{
-        bg: "gray.800",
-        }}
-        shadow="lg"
-        rounded="sm"
-        overflow="hidden"
-        >
-        <Image
-        w="full"
-        h="150px"
-        fit="cover"
-        objectPosition="center"
-        loading='lazy'
-        src={`http://38.242.149.102/storage/courses-images/${props.course.image}`}
-        alt="avatar"
-        />
+                _dark={{
+                bg: "#3e3e3e",
+                }}
+                p={5}
+                w="100%"
+                alignItems="center"
+                justifyContent="center"
+                >
+                <Box
+                h="-moz-min-content"
+                w="300px"
+                mx="10px"
+                _dark={{
+                bg: "gray.800",
+                }}
+                shadow="lg"
+                rounded="sm"
+                overflow="hidden"
+                >
+                <Image
+                w="full"
+                h="150px"
+                objectFit="fill"
+                objectPosition="center"
+                loading='lazy'
+                src={`${URL.STORAGE_URL}/${props.course.image}`}
+                alt="avatar"
+                />
 
-        <Box py={4} px={6}>
+        <Box py={4} px={6} height={"200px"} >
         <chakra.h1
             fontSize="xl"
             fontWeight="bold"
@@ -55,7 +57,8 @@ export default function CourseCard(props) {
         {props.withDescription && <chakra.p py={2} color="gray.700" _dark={{ color: "gray.400" }} >
             {props.course.header}
         </chakra.p> }
-
+        <Divider></Divider>
+        <Button marginBottom={"10%"} colorScheme='blue' >عرض التفاصيل</Button>
         </Box>
         </Box>
         </Flex>

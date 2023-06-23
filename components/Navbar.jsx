@@ -30,7 +30,8 @@ import {
   } from '@chakra-ui/icons';
   import { useRouter } from 'next/router';
   import Link from 'next/link';
-  
+  import * as URL from "@/constants"
+
 import { useForm } from 'react-hook-form';
 import { AuthContext } from '@/context/AuthContext';
   import { useState,useContext,useEffect } from 'react';
@@ -40,13 +41,13 @@ import axios from 'axios'
 
 
 async function getUserData(token) {
-  return await fetch("http://38.242.149.102/api/user-show", {
+  return await fetch(`${URL.API_URL}/user-show`, {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
 }
 
 async function logoutCall(token) {
-  return await fetch("http://38.242.149.102/api/user-logout", {
+  return await fetch(`${URL.API_URL}/user-logout`, {
     headers: {'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
 }
@@ -61,23 +62,23 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      
-      const storedToken = localStorage.getItem("token")
-      console.log("token from storage");
+      const storedToken = localStorage.getItem("token");
       console.log(storedToken);
-  
-      if (storedToken != null) {
-        localStorage.setItem("token", storedToken)
-        login(storedToken)
+      if (storedToken != "null") {
+        console.log("inside the if statement");
+        login(storedToken);
+        getUserData(storedToken).then((data) => {
+          setMyData(data);
+        });
       }
     } else {
-      getUserData(token)
-      .then(data => {
-        setMyData(data)
-      })      
+      getUserData(token).then((data) => {
+        console.log(data);
+        setMyData(data);
+      });
     }
-   }, []);
-
+  }, []);
+  
   const onSubmit = (values) => {
     router.push(`/searchPage/${values.search}`)
 
@@ -88,21 +89,16 @@ export default function Navbar() {
   }
 
   const onLogout = () => {
-    logoutCall(token);
-    localStorage.setItem("token", null)
-    logout();
-    router.push("/signin")
+    console.log("logout");
+    console.log(token);
+    logoutCall(token).then(() => {
+      localStorage.setItem("token", null)
+      logout();
+      router.push("/signin")
+    })
   }
 
-      // const { isLoading,data,error,isError,isFetched,isSuccess } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0
-      // })
-      // myData = data;
-      // myIsFetched = isSuccess
-      // console.log(myData);
-  
-
-
-    return (
+  return (
       <Box>
         <Flex
           bg={useColorModeValue('#4694D0', 'gray.800')}
@@ -139,7 +135,7 @@ export default function Navbar() {
               color={useColorModeValue('gray.800', 'white')}
               href='/'
               >
-          <Image src={"/cet_logo.png"}  alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src={"/cet_logo.png"} alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
               <Flex display={{ base: 'flex', md: 'none' }}>
               {isLoggedIn &&  (
@@ -170,15 +166,6 @@ export default function Navbar() {
               <DesktopNav />
             </Flex>
           </Flex>
-  
-          {/* <HStack flexWrap={{base:"wrap", md:"nowrap" }} spacingy="20px"  display={{base:'none',md:'inline-flex'}} mx={{md:"1%"}} width={{base:"60%",md:"50%",lg:"50%"}} >
-        <form onSubmit={handleSubmit(onSubmit)} >
-          <HStack px="10px" border="1px solid black" borderRadius="10px" >
-            <button><SearchIcon onClick={handleSubmit(onSubmit)} ></SearchIcon></button>
-            <Input required w={{lg:"360px"}} id="search" border="0px solid white"  {...register("search")} marginLeft="30px" borderColor="white" borderRadius="16px" placeholder='ابحث عن أي شيء'></Input>
-          </HStack>
-        </form>
-          </HStack> */}
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
@@ -188,7 +175,6 @@ export default function Navbar() {
             spacing={6}>
               {myData ? (
                 <Menu>
-                <Text fontSize={"1.4rem"} color={"black"} fontWeight={"bold"}>{myData && myData.data.name}</Text>
                 <MenuButton> 
                 <Avatar
                     size={'md'}
@@ -255,7 +241,7 @@ export default function Navbar() {
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
   const getCategories = () => {
-    return useSWR('http://38.242.149.102/api/categories', fetcher, {refreshInterval:1000});
+    return useSWR(`${URL.API_URL}/categories`, fetcher, {refreshInterval:1000});
   }
 
   const DesktopNav = () => {

@@ -7,28 +7,60 @@ import CourseNavbar from '@/components/CourseNavbar'
 import ReactPlayer from 'react-player'
 import { ChakraProvider } from '@chakra-ui/react'
 
-import { useState } from 'react';
+import { useState,useEffect, useContext } from 'react';
 import InfoTab from '@/components/InfoTab';
 import AttachementTab from '@/components/AttachementTab';
 import CommentsTab from '@/components/CommentsTab';
 import CourseContentMobile from '@/components/CourseContentMobile';
+import axios from 'axios';
+import NotFound from '../notFound';
+import { AuthContext } from '@/context/AuthContext';
+import * as URL from "@/constants"
 
+
+const fetcher = async (url) => await axios.get(url).then((res) => res.data);
+
+
+async function getCurrentCourse(courseId) {
+  return await fetch(`${URL.API_URL}/courses/${courseId}`)
+  .then(res => res.json())
+}
 export default function CoursePage() {
   const [duration, setDuration] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [currentLecture,setCurrentLecture] = useState(null);
+  const {isLoggedIn} = useContext(AuthContext);
   const router = useRouter();
   const onDuration = (duration) => {
   };
+  console.log(router.query.id);
+  
+  const { data, error,isLoading, } = useSWR(`${URL.API_URL}/course/${router.query.id}/lectures`, fetcher, {refreshInterval:1000});
+  
+  useEffect(() => { 
+    if (router.isReady) {
+      getCurrentCourse(router.query.id).then(courseData =>{
+        console.log(courseData);
+        setCourse(courseData)})      
+    } 
+  }, [router.isReady])
+ 
+  useEffect(() => {
+    if (data) {
+      setCurrentLecture(data.data[0])
+     } 
+  }, [data])  
 
-
-  const fetcher = (url) => fetch(url).then(res => res.json())
-  const { data, error, isLoading } = useSWR(`http://localhost:5000/courses/${router.query.id}`, fetcher)
-
-  if (isLoading) return <Loading></Loading>;
-  if (!data) return <Loading></Loading>;
-
+  if (isLoading) return <Loading/>;
+  if (!data) return <Loading/>;
+  if (error) return <NotFound/>
   return (
     <>
-    <CourseNavbar/>
+    {course ? (
+      <CourseNavbar name={course.data.name && course.data.name}/>
+    ) : (
+      <CourseNavbar name={"..."}/>
+    )}
     <Grid borderTop={"5px solid black"} templateColumns="repeat(8, 1fr)" bg="gray.50" >
         <GridItem
             as="main" 
@@ -37,7 +69,7 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"} controls onDuration={onDuration} url='https://www.youtube.com/watch?v=zOjov-2OZ0E'/>
+            <ReactPlayer height={"500px"} width={"100%"} controls onDuration={onDuration} url={data.data[0].url}/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
@@ -48,7 +80,7 @@ export default function CoursePage() {
         </TabList>
         <TabPanels  pr='1.5em' minH={"660px"} >
             <TabPanel defaultIndex={1}>
-              <InfoTab/>
+              <InfoTab currentLecture ={currentLecture} />
             </TabPanel>
             <TabPanel>
                 <AttachementTab/>
@@ -92,110 +124,15 @@ export default function CoursePage() {
         <Box> 
             <Heading fontSize={"1.7rem"} padding={"10px"} height={"min-content"} borderBottom={"1px solid black"} >محتوى الدورة</Heading>    
             <OrderedList marginRight={"30px"} >
-            <ListItem bg={"cornsilk.300"} 
+            {data.data && data.data.map(lecture => (
+              <ListItem bg={"cornsilk.300"} 
               _hover={{
                 background: "lightgray",
                 color: "black",
               }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}   >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-            <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
-                         <ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >هذه المحاضرة رقم راحد</ListItem>
+              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.name}</ListItem>
 
-<ListItem bg={"cornsilk.300"} 
-              _hover={{
-                background: "lightgray",
-                color: "black",
-              }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"} fontSize={"1.2rem"} >هذه المحاضرة رقم راحد</ListItem>
-
+            ))}
 
         </OrderedList>
         </Box>

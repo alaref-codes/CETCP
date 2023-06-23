@@ -21,6 +21,7 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { AuthContext } from '@/context/AuthContext';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import * as URL from '@/constants'
 
 import { useRouter } from 'next/router';
     
@@ -36,7 +37,7 @@ import { useRouter } from 'next/router';
       }
     });
 
-    const url = "http://38.242.149.102/api/login"
+    const url = `${URL.API_URL}/login`
 
 
     const createUser = async ({variables}) =>{

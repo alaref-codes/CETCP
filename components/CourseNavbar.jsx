@@ -39,7 +39,7 @@ import { AuthContext } from '@/context/AuthContext';
 import { useState, useContext} from 'react';
   
 
-  export default function CourseNavbar() {
+  export default function CourseNavbar({name}) {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
@@ -109,7 +109,7 @@ import { useState, useContext} from 'react';
             </Link>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <Heading  fontWeight={"900"} fontSize={"1rem"} color={"gray.50"} >تعلم أساسيات البرمجة</Heading>
+            <Heading  fontWeight={"900"} fontSize={"1rem"} color={"gray.50"} >{name}</Heading>
             </Flex>
           </Flex>
 
@@ -120,14 +120,7 @@ import { useState, useContext} from 'react';
             display={{ base: 'none', md: 'inline-flex' }}
 
             spacing={6}>
-            <Link 
-              fontSize={'sm'}
-              fontWeight={400}
-              href={'/'}>
-              <Button  color={'black'}>
-              <Text fontSize={"15px"}>تسجيل خروج</Text>
-              </Button>
-            </Link>
+
             <Menu>
               <MenuButton>
                   <Avatar

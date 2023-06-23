@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import Loading from '@/components/Loading';
 import NotFound from '@/pages/notFound';
 import axios from 'axios';
+import * as URL from "@/constants"
 
 
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
@@ -18,7 +19,7 @@ export default function SearchByCategoryPage() {
     const form = useForm();
     const { register,handleSubmit } = form;
     console.log(router.query.id);
-    const { data, error,isLoading } = useSWR(`http://38.242.149.102/api/courses-category/${router.query.id}`, fetcher, {refreshInterval:1000});
+    const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses-category/${router.query.id}`, fetcher, {refreshInterval:1000});
 
     if (isLoading) return <Loading></Loading>;
     if (error) {

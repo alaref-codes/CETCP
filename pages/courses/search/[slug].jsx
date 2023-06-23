@@ -8,13 +8,15 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import NotFound from '@/pages/notFound';
 import Loading from '@/components/Loading';
+import * as URL from "@/constants"
+
 
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
 
 export default function SearchPage() {
     const router = useRouter();
-    const { data, error, isLoading } = useSWR(`http://38.242.149.102/api/courses?contains[name]=${router.query.slug}&contains[description]=${router.query.slug}&contains[header]=${router.query.slug}`, fetcher)
+    const { data, error, isLoading } = useSWR(`${URL.API_URL}/courses?contains[name]=${router.query.slug}`, fetcher)
     const form = useForm();
     const { register,handleSubmit } = form;
 

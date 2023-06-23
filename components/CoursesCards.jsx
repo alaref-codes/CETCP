@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Loading from "./Loading";
 import axios from "axios";
 import NotFound from "@/pages/notFound";
+import * as URL from "@/constants"
 
 
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
@@ -11,7 +12,7 @@ const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
 export default function CoursesCards() {
 
-  const { data, error,isLoading } = useSWR('http://38.242.149.102/api/courses', fetcher, {refreshInterval:1000});
+  const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses`, fetcher, {refreshInterval:1000});
 
   if (isLoading) return <Loading></Loading>;
   if (error) {

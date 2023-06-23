@@ -11,7 +11,7 @@ export default function CourseCardInstructor(props) {
         borderRadius={"4px"}
         >
         <Image
-            objectFit='cover'
+            objectFit={'contain'}
             maxW={{ base: '100%', md: '200px' }}
             src='https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265'
             alt='Caffe Latte'
