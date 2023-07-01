@@ -23,7 +23,7 @@
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
-  import { useMutation, useQueryClient } from '@tanstack/react-query';
+  import { useMutation } from '@tanstack/react-query';
   import { AuthContext } from '@/context/AuthContext';
   import { useRouter } from 'next/router';
   import axios from 'axios';

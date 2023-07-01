@@ -36,17 +36,38 @@ import { useForm } from 'react-hook-form';
 
 import { AuthContext } from '@/context/AuthContext';
 
-import { useState, useContext} from 'react';
+import { useState, useContext,useEffect} from 'react';
   
+async function getUserData(token) {
+  return await fetch(`${URL.API_URL}/user-show`, {
+    headers: {'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
+
 
   export default function CourseNavbar({name}) {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
-    const { isLoggedIn, logout } = useContext(AuthContext);
-    const form = useForm();
-    const { register,handleSubmit } = form;
+    const { isLoggedIn, token, logout,login } = useContext(AuthContext);
 
+    console.log("------COURSE_NAVBAR------");
+    console.log(`is LoggedIn : ${isLoggedIn}`);
+
+    useEffect(() => {
+      if (!isLoggedIn) {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken != "null") {
+          getUserData(storedToken).then((data) => {
+            login(storedToken)
+          });
+        }
+      } else {
+        login(token);
+        getUserData(token).then((data) => {
+        });
+      }
+    }, []);
 
     const onSubmit = (values) => {
       router.push(`/searchPage/${values.search}`)

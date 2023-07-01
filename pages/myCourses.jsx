@@ -7,14 +7,6 @@ import Loading from '@/components/Loading';
 import NotFound from './notFound';
 import * as URL from "@/constants"
 
-// const fetcher = async (url,token) => await axios.get(url, {headers: {Authorization : `Bearer ${token}`}}).then((res) => res.data);
-
-// const sfetcher = async (url,token) => {
-//   fetch(url, {
-//     headers: {'Authorization': 'Bearer '+token} })
-//   .then(res => res.json())
-// }
-
 
 async function getMyCourses(token) {
   return await fetch(`${URL.API_URL}/courses-students`, {
@@ -27,17 +19,6 @@ export default function myCourses() {
   const [isLoading,setIsLoading] = useState(false)
   const [data,setData] = useState(null)
 
-
-  // console.log(token);
-  
-  // if (token) {
-
-  //   const { data, error, isLoading } = useSWR([url,token], sfetcher)
-  //   myIsLoading = isLoading
-  //   myError = error
-  //   myData = data
-  // }
-
   useEffect(() => { 
     setIsLoading(true)
     if (isLoggedIn) {
@@ -48,14 +29,7 @@ export default function myCourses() {
     setIsLoading(false)
   }, [])
   
-  // console.log(data);
-  // console.log("My error");
-
-  // console.log(error);
   if (isLoading) return <Loading></Loading>;
-  // if (myError) {
-  //   return <NotFound/>
-  // }
 
   return (
     <>
@@ -65,7 +39,7 @@ export default function myCourses() {
     
     <SimpleGrid width={"80%"} marginRight={"0px"} minChildWidth={"250px"} columns={"3"}  >
           {data && data.data.data.map(course => (
-          <CourseCard  key={course.id} withDescription={false}  course={course} payed={true} />
+          <CourseCard  key={course.id} withDescription={false}  course={course} payed={true} myCourses={[]} />
           ))}
     </SimpleGrid>
 

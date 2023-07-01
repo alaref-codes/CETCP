@@ -24,16 +24,43 @@ import {
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ChakraBaseProvider 
   } from '@chakra-ui/react';
   import * as URL from "@/constants"
+  import { useToast } from '@chakra-ui/react';
+  import { useMutation } from '@tanstack/react-query';
 
 
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
   export default function CourseDetailPage() {
+    const toast = useToast()
     const router = useRouter();
     const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
     const initialRef = useRef(null)
     const finalRef = useRef(null)  
     const { isOpen, onOpen, onClose } = useDisclosure()
 
+
+        
+    const purchaseCourse = async () =>{
+      return axios.post(`${URL.API_URL}/courses-buy/${data.data.id}`,{},{headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }}).then(res => res.data)
+    }
+
+    const mutation = useMutation({
+      mutationFn: purchaseCourse,
+      retry: 2,
+      onSuccess: () => {
+        toast({
+          title:'تم الإشتراك في الدورة بنجاح',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+        router.push("/")
+      },
+
+      })
+
+    const onSubmit = () => {
+      mutation.mutate()
+    }
 
     if (isLoading) return <Loading></Loading>;
     if (error) {
@@ -153,7 +180,7 @@ import {
                 </ModalBody>
 
                 <ModalFooter>
-                  <Button colorScheme='blue' ml={"10px"}>
+                  <Button onClick={onSubmit} colorScheme='blue' ml={"10px"}>
                     إتمام العملية
                   </Button>
                   <Button onClick={onClose}>الرجوع</Button>

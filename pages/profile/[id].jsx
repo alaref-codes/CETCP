@@ -13,38 +13,111 @@ import {
     IconButton,
     Center,
   } from '@chakra-ui/react';
+  import Loading from '@/components/Loading';
   import { SmallCloseIcon } from '@chakra-ui/icons';
-  
+  import * as URL from '@/constants'
   import { AuthContext } from '@/context/AuthContext';
+  import { useForm } from 'react-hook-form';
+  import { 
+    useQuery,
+    useMutation
+  } from '@tanstack/react-query';
+  import React from 'react';
 
-
-import { 
-  useQuery,
-  useQueryClient
- } from '@tanstack/react-query';
-
- import { useState,useContext } from 'react';
+async function getUserData(token) {
+  return await fetch(`${URL.API_URL}/user-show`, {
+    headers: {'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+  .catch(err => {
+    console.log(err);
+  })
+}
 
   export default function ProfilePage() {
-    const { isLoggedIn, token } = useContext(AuthContext);
-    const queryClient = useQueryClient()
+    const { isLoggedIn, token,login } = React.useContext(AuthContext);
+    const [data, setData] = React.useState(undefined);
 
-    const fetchData = async () =>{
-      const response = await fetch("http://38.242.149.102/api/user-show", {
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
-      const jsonData = await response.json();
-      return jsonData
+    React.useEffect(() => {
+      if (!isLoggedIn) {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken != "null") {
+          login(token)
+          localStorage.setItem("token", storedToken)
+          getUserData(storedToken).then((data) => {
+            setData(data);
+          });
+        }
+      } else {
+        getUserData(token).then((data) => {
+          setData(data);
+          localStorage.setItem("token", token)
 
-    }
-
-    let myData = null;
-    const { isLoading,data,error,isError,isFetched } = useQuery( ['user'], fetchData, { retry: false, refreshInterval: 0, staleTime: 0
-    })
+        });
+      }
+    
+    },[])
+    
+    let form = undefined
     console.log(data);
-    if (isError) {
-      console.log(error);
+    console.log(isLoggedIn);
+    console.log(token);
+    if (data) {
+      form = useForm({
+        defaultValues: {
+          username: "nice",
+          email: data.email,
+          password: data.password,
+        }
+      });
+    } else {
+      form = useForm({
+        defaultValues: {
+          username: "",
+          email: "",
+          password: "",
+        }
+      });
     }
-    myData = data;
+    const { register } = form;
+
+    const mutation = useMutation({
+      mutationFn: () => {console.log("hello world");},
+      retry: 2,
+      onSuccess: () => {
+        toast({
+          title: 'تم تحديث الحساب بنجاح',
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
+        })
+      },
+
+      })
+
+ 
+    const onSubmit = (data) => {
+      mutation.mutate({variables:data})
+    }
+
+    // const config = {
+    //   headers: {
+        
+    //   }
+    // }
+    // if (token) {
+    //   axios.defaults.headers.common['Authorization'] = token
+    //   const {axiosData,isLoading} = useQuery({
+    //     queryFn: async () => {
+    //       const {data} = await axios.get(`${URL.API_URL}/user-show`)
+    //       console.log(data);
+    //       return data;
+    //     }
+    //   })
+    // }
+
+    if (!data) {
+      return <Loading/>
+    }
 
     return (
       <Flex
@@ -64,7 +137,7 @@ import {
           <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
             تعديل ملفك الشخصي
           </Heading>
-          <FormControl id="userName">
+          <FormControl id="userIcon">
             <FormLabel>User Icon</FormLabel>
             <Stack direction={['column', 'row']} spacing={6}>
               <Center>
@@ -85,12 +158,13 @@ import {
               </Center>
             </Stack>
           </FormControl>
-          <FormControl id="userName" isRequired>
+          <FormControl id="username" isRequired>
             <FormLabel>اسم المستخدم</FormLabel>
             <Input
               placeholder={"randomtext"}
               _placeholder={{ color: 'gray.500' }}
               type="text"
+              {...register("username")}
             />
           </FormControl>
           <FormControl id="email" isRequired>
@@ -99,6 +173,7 @@ import {
               placeholder=""
               _placeholder={{ color: 'gray.500' }}
               type="email"
+              {...register("email" )}
             />
           </FormControl>
           <FormControl id="password" isRequired>
@@ -107,6 +182,8 @@ import {
               placeholder="كلمة المرور"
               _placeholder={{ color: 'gray.500' }}
               type="password"
+              {...register("password")}
+
             />
           </FormControl>
           <Stack spacing={6} direction={['column', 'row']}>

@@ -1,10 +1,22 @@
-import { Flex,Box,Image,Icon,chakra, Img, Button, Divider} from '@chakra-ui/react'
+import { Flex,Box,Image,Icon,chakra, Text, Button, Divider} from '@chakra-ui/react'
 import Link from 'next/link'
 import * as URL from "@/constants"
+import React from 'react'
 
 export default function CourseCard(props) {
+  let paid = false;
+  for (let index = 0; index < props.myCourses.length; index++) {
+    if (props.myCourses[index].id == props.course.id) {
+      paid = true;
+    }
+  }
+
+  if (props.payed) {
+    paid = true;
+  }
+
   return (
-    <Link href={props.payed ? `/coursePage/${props.course.id}` : `/courseDetailPage/${props.course.id}`} >
+    <Link href={paid ? `/coursePage/lecture/${props.course.id}/${props.course.first_lecture_id}` : `/courseDetailPage/${props.course.id}`} >
             <Box w={{base:"300px", md:"full"}}>
             <Flex
                 _dark={{
@@ -58,7 +70,7 @@ export default function CourseCard(props) {
             {props.course.header}
         </chakra.p> }
         <Divider></Divider>
-        <Button marginBottom={"10%"} colorScheme='blue' >عرض التفاصيل</Button>
+        <Button marginBottom={"10%"} colorScheme={paid ? "blue" : "orange"} >{paid ? (<Text>استمرار في التعلم</Text>) : (<Text>عرض التفاصيل</Text>)}</Button>
         </Box>
         </Box>
         </Flex>

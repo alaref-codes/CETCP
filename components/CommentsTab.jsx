@@ -1,7 +1,17 @@
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
-import { Flex, HStack, Image,Box,Text, VStack, Divider, Heading, Spacer,MenuIcon } from "@chakra-ui/react";
+import { Flex, Avatar,Image,Box,Text, Heading, Spacer } from "@chakra-ui/react";
 import Comment from "./Comment";
-export default function CommentsTab() {
+import useSWR from 'swr'
+import axios from "axios";
+import * as URL from "@/constants"
+
+
+const fetcher = async (url) => await axios.get(url).then((res) => res.data);
+
+export default function CommentsTab({lectureId}) {
+  const { data, error,isLoading } = useSWR(`${URL.API_URL}/comments/${lectureId}`, fetcher, {refreshInterval:1000});
+  if (isLoading) return <Text>Loading....</Text>;
+
   return (
 
     <Box marginX={{base:"5px",md:"50px"}} >
@@ -14,62 +24,26 @@ export default function CommentsTab() {
                   '&::-webkit-scrollbar-thumb': {
                     backgroundColor: `rgba(0, 0, 0, 0.05)`,
                     borderRadius: '17px',
-                  },}}
-
-    >  
-    <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
-      <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
-          <Image h={"50px"} w={"50px"} borderRadius={"50%"} src={"https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265"} ></Image>
-          <Text marginRight={"10px"} fontWeight={"bold"} >Test Test</Text>
-          <Spacer></Spacer>
-          <Text marginLeft={"10px"} color={"gray.600"}  >2023-6-1 10:52</Text>
-          <EditIcon marginBottom={"5px"} ></EditIcon>
-        </Flex>
-      <Box paddingRight={"60px"}  >
-        <Text>basics sdlkjfsdkfj sdlkfj sdlkfjdslfkjsdflksjf lsdkjf sdlkfj</Text>
-      </Box>
-      </Box>
- 
-      <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
-      <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
-          <Image h={"50px"} w={"50px"} borderRadius={"50%"} src={"https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265"} ></Image>
-          <Text marginRight={"10px"} fontWeight={"bold"} >Test Test</Text>
-          <Spacer></Spacer>
-          <Text marginLeft={"10px"} color={"gray.600"}  >2023-6-1 10:52</Text>
-          <EditIcon marginBottom={"5px"} ></EditIcon>
-        </Flex>
-      <Box paddingRight={"60px"}  >
-        <Text>basics sdlkjfsdkfj sdlkfj sdlkfjdslfkjsdflksjf lsdkjf sdlkfj</Text>
-      </Box>
-      </Box>
-      <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
-      <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
-          <Image h={"50px"} w={"50px"} borderRadius={"50%"} src={"https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265"} ></Image>
-          <Text marginRight={"10px"} fontWeight={"bold"} >Test Test</Text>
-          <Spacer></Spacer>
-          <Text marginLeft={"10px"} color={"gray.600"}  >2023-6-1 10:52</Text>
-          <EditIcon marginBottom={"5px"} ></EditIcon>
-        </Flex>
-      <Box paddingRight={"60px"}  >
-        <Text>basics sdlkjfsdkfj sdlkfj sdlkfjdslfkjsdflksjf lsdkjf sdlkfj</Text>
-      </Box>
-      </Box>
-      <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
-      <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
-          <Image h={"50px"} w={"50px"} borderRadius={"50%"} src={"https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265"} ></Image>
-          <Text marginRight={"10px"} fontWeight={"bold"} >Test Test</Text>
-          <Spacer></Spacer>
-          <Text marginLeft={"10px"} color={"gray.600"}  >2023-6-1 10:52</Text>
-          <EditIcon marginBottom={"5px"} ></EditIcon>
-        </Flex>
-      <Box paddingRight={"60px"}  >
-        <Text>basics sdlkjfsdkfj sdlkfj sdlkfjdslfkjsdflksjf lsdkjf sdlkfj</Text>
-      </Box>
-      </Box>
+                  },}} >  
+    {data && data.data.map(comment => (
+          <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
+          <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
+            {console.log("dsfsd")}
+              <Avatar name={comment.user.name} src={`${URL.USER_IMAGE}/${comment.user.image}`}/>
+              <Text marginRight={"10px"} fontWeight={"bold"} >{comment.user.name}</Text>
+              <Spacer></Spacer>
+              <Text marginLeft={"10px"} color={"gray.600"}>{comment.created_at  }</Text>
+              <EditIcon marginBottom={"5px"} ></EditIcon>
+            </Flex>
+          <Box paddingRight={"60px"}  >
+            <Text>{comment.comment}</Text>
+          </Box>
+          </Box>
+    ))}
       </Box>
       
-        <Heading fontSize={"1.6rem"}>قم بكتابة استفسارك</Heading>
-        <Comment></Comment>
+      <Heading fontSize={"1.6rem"}>قم بكتابة استفسارك</Heading>
+        <Comment lectureId={lectureId} ></Comment>
       </Box>
 
   )

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import {Grid, GridItem,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel, Flex, Box, Divider, Heading} from "@chakra-ui/react"
-import Loading from '../../components/Loading'
+import {Grid, GridItem,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel, Flex, Box, Divider, Heading, UnorderedList} from "@chakra-ui/react"
+import Loading from "@/components/Loading"
 import useSWR from 'swr';
 import Footer from '@/components/Footer';
 import CourseNavbar from '@/components/CourseNavbar'
@@ -13,9 +13,10 @@ import AttachementTab from '@/components/AttachementTab';
 import CommentsTab from '@/components/CommentsTab';
 import CourseContentMobile from '@/components/CourseContentMobile';
 import axios from 'axios';
-import NotFound from '../notFound';
+import NotFound from '@/pages/notFound';
 import { AuthContext } from '@/context/AuthContext';
 import * as URL from "@/constants"
+import Link from 'next/link';
 
 
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
@@ -25,39 +26,63 @@ async function getCurrentCourse(courseId) {
   return await fetch(`${URL.API_URL}/courses/${courseId}`)
   .then(res => res.json())
 }
+
+// async function getLectures(courseId) {
+//   return await fetch(`${URL.API_URL}/course/${courseId}/lectures`)
+//   .then(res => res.json())
+// }
 export default function CoursePage() {
-  const [duration, setDuration] = useState(null);
   const [course, setCourse] = useState(null);
+  const [lectures, setLectures] = useState(null);
   const [currentLecture,setCurrentLecture] = useState(null);
+  const [currentLectureId,setCurrentLectureId] = useState(null);
+  const [lectureDuration, setLectureDuration] = useState(null);
   const {isLoggedIn} = useContext(AuthContext);
   const router = useRouter();
+
   const onDuration = (duration) => {
+    setLectureDuration(duration)
   };
-  console.log(router.query.id);
-  
-  const { data, error,isLoading, } = useSWR(`${URL.API_URL}/course/${router.query.id}/lectures`, fetcher, {refreshInterval:1000});
-  
+
   useEffect(() => { 
+    console.log("is logged in " + isLoggedIn);
     if (router.isReady) {
-      getCurrentCourse(router.query.id).then(courseData =>{
-        console.log(courseData);
-        setCourse(courseData)})      
+      getCurrentCourse(router.query.id[0]).then(courseData =>{
+        setCourse(courseData);
+        setLectures(courseData.data.lectures);
+        setCurrentLectureId(router.query.id[1])
+        // const isCurrentLecture = (element) => element.id === router.query.id[1];
+        console.log(courseData.data.lectures[0]);
+        setCurrentLecture(courseData.data.lectures[0])
+      })     
     } 
   }, [router.isReady])
- 
+  
   useEffect(() => {
-    if (data) {
-      setCurrentLecture(data.data[0])
-     } 
-  }, [data])  
-
-  if (isLoading) return <Loading/>;
-  if (!data) return <Loading/>;
-  if (error) return <NotFound/>
+      if (lectures){
+        setCurrentLectureId(router.query.id[1])
+        setCurrentLecture(lectures[course.data.lectures.findIndex(element => element.id == router.query.id[1])])
+        }
+  },[router])
+      
+  // const onLectureChange = () => {
+  //       if (lectures){
+  //         setCurrentLectureId(router.query.id)
+  //         const isCurrentLecture = (element) => element.id === router.query.id[1];
+  //     setCurrentLecture[lectures[lectures.findIndex(isCurrentLecture)]]
+  //   }
+  // }
+  console.log(currentLecture);
+  // useEffect(() => {
+    //   if (data) {
+      //     setCurrentLecture(data.data[router.query.id[1]-1])
+      //   }
+      // },[router])
+  if (!currentLecture) return <Loading/>;
   return (
     <>
     {course ? (
-      <CourseNavbar name={course.data.name && course.data.name}/>
+      <CourseNavbar name={course.data.name}/>
     ) : (
       <CourseNavbar name={"..."}/>
     )}
@@ -69,7 +94,7 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"} controls onDuration={onDuration} url={data.data[0].url}/>
+            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={currentLecture.url}/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
@@ -80,13 +105,13 @@ export default function CoursePage() {
         </TabList>
         <TabPanels  pr='1.5em' minH={"660px"} >
             <TabPanel defaultIndex={1}>
-              <InfoTab currentLecture ={currentLecture} />
+              <InfoTab currentLecture={currentLecture} duration={lectureDuration} instructor={course.data.trainer_name} />
             </TabPanel>
             <TabPanel>
-                <AttachementTab/>
+                <AttachementTab resource_url={currentLecture.resource_url} resource_name={currentLecture.resource_name} />
             </TabPanel>
             <TabPanel>
-                <CommentsTab></CommentsTab>
+                <CommentsTab lectureId={currentLecture.id} ></CommentsTab>
             </TabPanel>
             <TabPanel display={{base:"initial",md:"none"}} >
                 <CourseContentMobile></CourseContentMobile>
@@ -123,18 +148,38 @@ export default function CoursePage() {
         >
         <Box> 
             <Heading fontSize={"1.7rem"} padding={"10px"} height={"min-content"} borderBottom={"1px solid black"} >محتوى الدورة</Heading>    
-            <OrderedList marginRight={"30px"} >
-            {data.data && data.data.map(lecture => (
-              <ListItem bg={"cornsilk.300"} 
+            {lectures && course && lectures.map(lecture => (
+
+              lecture.id == currentLectureId ? 
+              <UnorderedList listStyleType={"none"} bg={"gray"} paddingRight={"30px"} 
+              _hover={{
+                background: "lightgray",
+              }}
+              >
+                <Link href={`/coursePage/lecture/${course.data.id}/${lecture.id}`}>
+                  <ListItem color={"whiteAlpha.900"}
+                  _hover={{
+                    color: "black",
+                  }}
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"extrabold"} fontSize={"1.2rem"} >{lecture.id}  - {lecture.name}</ListItem>
+                </Link>
+              </UnorderedList> : 
+              <UnorderedList listStyleType={"none"} paddingRight={"30px"}
               _hover={{
                 background: "lightgray",
                 color: "black",
               }}
-              padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.name}</ListItem>
-
+              >
+                <Link href={`/coursePage/lecture/${course.data.id}/${lecture.id}`} >
+                  <ListItem bg={"cornsilk.300"} 
+                  _hover={{
+                    color: "black",
+                  }}
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.id}  - {lecture.name}</ListItem>
+                </Link>
+              </UnorderedList>  
             ))}
 
-        </OrderedList>
         </Box>
         </GridItem>      
     </Grid>

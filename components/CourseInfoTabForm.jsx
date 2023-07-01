@@ -27,6 +27,8 @@ import {
   import { useRef } from 'react';
   import { Editor } from '@tinymce/tinymce-react';
 
+  import { useMutation } from '@tanstack/react-query';
+
   
   export default function CourseInfoTabForm() {
     const editorRef = useRef(null);
@@ -45,16 +47,26 @@ import {
     console.log(isDirty);
 
 
-    const onSubmit = (data) => {
-      console.log(data);
-      toast({
-        title: 'Account created.',
-        description: "We've created your account for you.",
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
+    const mutation = useMutation({
+      mutationFn: createUser,
+      retry: 2,
+      onSuccess: (data) => {
+        toast({
+          title: 'تم تسجيل الدخول',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+        login(data.data.token)
+        router.push("/")
+      },
+
       })
+
+    const onSubmit = (data) => {
+      mutation.mutate({variables:data})
     }
+
     return (
 
         <Stack marginY={"30px"} spacing={8} maxW={'lg'} >

@@ -42,7 +42,7 @@ import axios from 'axios'
 
 async function getUserData(token) {
   return await fetch(`${URL.API_URL}/user-show`, {
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`} })
+    headers: {'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
 }
 
@@ -59,21 +59,22 @@ export default function Navbar() {
   const { isLoggedIn, token, logout,login } = useContext(AuthContext);
   const [myData, setMyData] = useState(undefined);
 
+  console.log("------NAVBAR------");
+  console.log(`is LoggedIn : ${isLoggedIn}`);
+  console.log(`token : ${token}`);
 
   useEffect(() => {
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("token");
-      console.log(storedToken);
       if (storedToken != "null") {
-        console.log("inside the if statement");
-        login(storedToken);
         getUserData(storedToken).then((data) => {
           setMyData(data);
+          login(storedToken)
         });
       }
     } else {
+      login(token);
       getUserData(token).then((data) => {
-        console.log(data);
         setMyData(data);
       });
     }
@@ -89,8 +90,6 @@ export default function Navbar() {
   }
 
   const onLogout = () => {
-    console.log("logout");
-    console.log(token);
     logoutCall(token).then(() => {
       localStorage.setItem("token", null)
       logout();
@@ -251,11 +250,7 @@ export default function Navbar() {
     
     const { data, error,isLoading } = getCategories()
     if (isLoading) return <Text>Loading...</Text>;
-    if (error) { 
-      console.log(error);
-    }
     NAV_ITEMS[0].children = data.data;
-    console.log(NAV_ITEMS.children);
     return (
       <Stack direction={'row'} spacing={4}>
         {NAV_ITEMS.map((navItem) => (
@@ -337,7 +332,6 @@ export default function Navbar() {
     const router = useRouter()
 
     const onSubmit = (values) => {
-      console.log(values);
       router.push(`/courses/search/${values.search}`)
 
     }
@@ -359,12 +353,10 @@ export default function Navbar() {
   
 
   const MobileNav = () => {
-    const { data, error,isLoading } = getCategories()
+    const { data,isLoading } = getCategories()
 
     if (isLoading) return <Text>Loading...</Text>;
-    if (error) { 
-      console.log(error);
-    }
+
 
     NAV_ITEMS[0].children = data.data;
 
