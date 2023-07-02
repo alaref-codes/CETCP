@@ -440,6 +440,11 @@ export default function Navbar() {
       label: 'الدورات',
       children: null,
       href: "/myCourses"
+    },
+    {
+      label: 'حول',
+      children: null,
+      href: "/about"
     }
 
 

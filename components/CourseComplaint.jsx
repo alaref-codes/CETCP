@@ -44,8 +44,8 @@ export default function CourseComplaint() {
   
   return (
         <form onSubmit={handleSubmit(onSubmit)} >
-            <Box bg={"gray.50"}  width={{base:"100%",md:"60%"}} marginTop={"12px"} marginX={{base:"10px",md:"10%"}} borderRadius={"7px"} >
-            <Flex alignItems={"flex-start"} backgroundColor={"gray.50"} direction={"column"} >
+            <Box bg={"black"}  width={{base:"100%",md:"60%"}} marginTop={"12px"} marginX={{base:"10px",md:"10%"}} borderRadius={"7px"} >
+            <Flex alignItems={"flex-start"} backgroundColor={"white"} direction={"column"} >
             <Box padding={"0px"} h={"0px"} marginBottom={"50px"}>
                 <Text>هل لديك شكوى متعلقة بهذه الدورة ؟ قم بكتابتها</Text>
             </Box>

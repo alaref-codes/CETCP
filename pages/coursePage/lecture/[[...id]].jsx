@@ -94,7 +94,7 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={currentLecture.url}/>
+            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={`${URL.RESOURCE_URL}/${currentLecture.url}`}/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
