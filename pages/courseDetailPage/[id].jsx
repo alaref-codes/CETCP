@@ -21,7 +21,7 @@ import {
     useColorModeValue,
     List,
     ListItem,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ChakraBaseProvider 
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter 
   } from '@chakra-ui/react';
   import * as URL from "@/constants"
   import { useToast } from '@chakra-ui/react';
@@ -40,6 +40,9 @@ import {
 
         
     const purchaseCourse = async () =>{
+      if (localStorage.getItem("token") == "null") {
+        router.push("/signin")
+      }
       return axios.post(`${URL.API_URL}/courses-buy/${data.data.id}`,{},{headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }}).then(res => res.data)
     }
 
@@ -53,7 +56,7 @@ import {
           duration: 9000,
           isClosable: true,
         })
-        router.push("/")
+        router.push(`/coursePage/lecture/${data.data.id}/${data.data.first_lecture_id}`)
       },
 
       })
@@ -86,22 +89,22 @@ import {
           <Stack spacing={{ base: 6, md: 10 }}>
             <Box as={'header'}>
               <Heading
-                lineHeight={1.1}
                 fontWeight={600}
                 fontSize={{ base: '2xl', sm: '4xl', lg: '5xl' }}>
                 {data && data.data.name}
               </Heading>
               <Text
                 color={useColorModeValue('gray.900', 'gray.400')}
-                fontWeight={300}
-                fontSize={'2xl'}>
-                {data.data.instructor}
+                fontWeight={"bold"}
+                lineHeight={"50px"}
+                fontSize={'xl'}>
+                المدرب : {data.data.trainer_name}
               </Text>
               <Text
                 color={useColorModeValue('gray.900', 'gray.400')}
                 fontWeight={300}
-                fontSize={'2xl'}>
-                {data.data.price}
+                fontSize={'xl'}>
+                تكلفة الدورة : {data.data.price}
               </Text>
             </Box>
   
@@ -115,31 +118,16 @@ import {
               }>
               <VStack spacing={{ base: 4, sm: 6 }}>
                 <Text fontSize={'lg'}>
-                  {data.data.description}
+                  {data.data.header}
                 </Text>
               </VStack>
               <Box>
                 <Text
-                  fontSize={{ base: '16px', lg: '20px' }}
-                  color={useColorModeValue('yellow.700', 'yellow.700')}
-                  fontWeight={'bold'}
+                  textAlign={"left"}
                   textTransform={'uppercase'}
                   mb={'4'}>
-                  محاور الدورة
+                   {data.data.description}
                 </Text>
-  
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-                  <List spacing={2}>
-                    <ListItem>مقدمة عن البرمجة</ListItem>
-                    <ListItem> </ListItem>{' '}
-                    <ListItem>Tachymeter</ListItem>
-                  </List>
-                  <List spacing={2}>
-                    <ListItem>Anti‑magnetic</ListItem>
-                    <ListItem>Chronometer</ListItem>
-                    <ListItem>Small seconds</ListItem>
-                  </List>
-                </SimpleGrid>
               </Box>
               
             </Stack>
@@ -174,8 +162,8 @@ import {
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                   <Heading>الدورة: {data.data.name}</Heading>
-                  <chakra.p>المدرب: {data.data.instructor}</chakra.p>
-                  <Text as="h4">تكلفة الدورة: {data.data.cost}</Text>
+                  <chakra.p>المدرب: {data.data.trainer_name}</chakra.p>
+                  <Text as="h4">تكلفة الدورة: {data.data.price}</Text>
                   <Text as="h4">رصيدك الحالي: 333</Text>
                 </ModalBody>
 

@@ -90,7 +90,7 @@ export default function Navbar() {
   }
 
   const onLogout = () => {
-    logoutCall(token).then(() => {
+    logoutCall(localStorage.getItem("token")).then(() => {
       localStorage.setItem("token", null)
       logout();
       router.push("/signin")
