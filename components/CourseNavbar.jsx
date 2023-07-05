@@ -50,9 +50,7 @@ async function getUserData(token) {
     const { isOpen, onToggle } = useDisclosure();
     const [searchIsOpen, setSearchIsOpen] = useState(false);
     const { isLoggedIn, token, logout,login } = useContext(AuthContext);
-
-    console.log("------COURSE_NAVBAR------");
-    console.log(`is LoggedIn : ${isLoggedIn}`);
+    const {userData, setUserData } = useState(null);
 
     useEffect(() => {
       if (!isLoggedIn) {
@@ -65,6 +63,7 @@ async function getUserData(token) {
       } else {
         login(token);
         getUserData(token).then((data) => {
+          setUserData(data)
         });
       }
     }, []);
@@ -151,11 +150,13 @@ async function getUserData(token) {
                   }
                 />
               </MenuButton>
-              <MenuList>
-                <Link  href={"/profile/2"}>
-                  <MenuItem color={"black"} >الملف الشخصي</MenuItem>
-                </Link>
-              </MenuList>
+              {userData && 
+                <MenuList>
+                  <Link  href={`/profile/${userData.data.id}`}>
+                    <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                  </Link>
+                </MenuList>
+              }
             </Menu>
           </Stack>
         </Flex>
