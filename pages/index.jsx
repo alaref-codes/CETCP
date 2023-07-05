@@ -4,9 +4,29 @@ import Hero from '../components/Hero'
 import CoursesCards from '@/components/CoursesCards'
 import SubHeader from '@/components/SubHeader'
 import { Box } from '@chakra-ui/react'
-const inter = Inter({ subsets: ['latin'] })
+import { useEffect, useState } from 'react'
+import { redirect } from 'next/navigation'
+async function getUserData(token) {
+  return await fetch(`${URL.API_URL}/user-show`, {
+    headers: {'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
 
 export default function Home() {
+  const [render , setRender] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem("token") != "null") {
+      console.log(localStorage.getItem("token"));
+      getUserData(localStorage.getItem("token")).then((data) => {
+        if (data.data.type == "trainer") {
+          redirect("/instructor/courses")
+        }
+      });
+    }
+    setRender(true)
+  }, [])
+
   return (
     <>
       <Head>
@@ -17,7 +37,7 @@ export default function Home() {
       <main>
         <Hero></Hero>
         <SubHeader></SubHeader>
-        <CoursesCards></CoursesCards>
+        {render && <CoursesCards/>}
         <Box height="100px"/>
       </main>
     </>

@@ -99,22 +99,6 @@ async function getUserData(token) {
       mutation.mutate({variables:data})
     }
 
-    // const config = {
-    //   headers: {
-        
-    //   }
-    // }
-    // if (token) {
-    //   axios.defaults.headers.common['Authorization'] = token
-    //   const {axiosData,isLoading} = useQuery({
-    //     queryFn: async () => {
-    //       const {data} = await axios.get(`${URL.API_URL}/user-show`)
-    //       console.log(data);
-    //       return data;
-    //     }
-    //   })
-    // }
-
     if (!data) {
       return <Loading/>
     }

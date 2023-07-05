@@ -1,5 +1,5 @@
 
-  import {
+import {
     Flex,
     Box,
     Image,
@@ -19,7 +19,7 @@
     Link,
     VStack,
   } from '@chakra-ui/react';
-  import { useContext, useState,useEffect } from 'react';
+  import { useContext, useState } from 'react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
@@ -28,14 +28,7 @@
   import { useRouter } from 'next/router';
   import axios from 'axios';
   import * as URL from '@/constants'
-
-  async function getUserData(token) {
-    return await fetch(`${URL.API_URL}/user-show`, {
-      headers: {'Authorization': `Bearer ${token}`} })
-    .then(res => res.json())
-  }
-  
-  export default function Signup() {
+  export default function TrainerSignupPage() {
     const [topping, setTopping] = useState("1")
 
     const [value, setValue] = useState('1')
@@ -59,20 +52,8 @@
       setTopping(e.target.value)
     }
 
-    
-    useEffect(() => {
-      if (localStorage.getItem("token") != "null") {
-        getUserData(localStorage.getItem("token")).then((data) => {
-          if (data.data.type == "trainer") {
-            router.push("/instructor/courses")
-          } else {
-            router.push("/")
-          }
-        });
-      }
-    }, [])
-
     const createUser = async ({variables}) =>{
+
       return axios.post(url,{
         name: variables.username,
         email:variables.email,
@@ -80,7 +61,7 @@
         password_confirmation: variables.password,
         gender: variables.gender,
         phone: variables.number,
-        type: "student"
+        type: "trainer"
       }).then(res => res.data)
 
     }
@@ -91,6 +72,7 @@
 
     const mutation = useMutation({
       mutationFn: createUser,
+      retry: 2,
       onSuccess: (data) => {
         toast({
           title: 'تم تسجيل الدخول',
@@ -112,7 +94,7 @@
       <Stack minH={'100vh'}  direction={{ base: 'column', md: 'row' }}>
         <Flex
         minH={'100%'}
-        alignItems={'center'}
+        align={'center'}
         justify={'center'}
 
         bg={useColorModeValue('gray.50', 'gray.800')}>
@@ -153,7 +135,7 @@
                                   }
                                 })}></Input>
                                 <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
-                                <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.phone}</Text>
+                                {/* <Text color={"red"} fontSize={"12px"} >{mutation.error.response.data.message?.phone ? mutation.error.response.data.message?.phone : "" }</Text> */}
                           </FormControl>
                       </Box>
                     </HStack>
@@ -171,7 +153,7 @@
                                 })} />
                     </FormControl>
                     <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
-                    <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.email}</Text>
+                    {/* <Text color={"red"} fontSize={"12px"} >{mutation.error.response.data.message?.email && mutation.error.response.data.message?.email}</Text> */}
 
                     <FormControl>
                       <FormLabel  htmlFor='gender' >الجنس</FormLabel>
@@ -234,7 +216,7 @@
                   </FormControl>
                 <Stack spacing={10} pt={2}>
                   <Button
-                    // isDisabled={mutation.isLoading}
+                    isDisabled={mutation.isLoading}
                     type='submit'
                     loadingText="Submitting"
                     size="lg"
@@ -248,7 +230,7 @@
                 </Stack>
               </form>
                 <Stack pt={6}>
-                  <Text>
+                  <Text align={'center'}>
                     هل لديك حساب بالفعل <Link href='./signin' color={'blue.400'}>تسجيل دخول</Link>
                   </Text>
                 </Stack>
@@ -260,7 +242,7 @@
         <Flex flex={1}>
           <Image
             src={
-              'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80'
+                "https://images.unsplash.com/photo-1511629091441-ee46146481b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
             }
           />
         </Flex>
@@ -270,7 +252,7 @@
 
 
 
-  Signup.getLayout = function PageLayout(page) { 
+  TrainerSignupPage.getLayout = function PageLayout(page) { 
     return (
       <>
         {page}

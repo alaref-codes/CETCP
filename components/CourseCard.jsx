@@ -2,18 +2,24 @@ import { Flex,Box,Image,Icon,chakra, Text, Button, Divider} from '@chakra-ui/rea
 import Link from 'next/link'
 import * as URL from "@/constants"
 import React from 'react'
+import { useState,useEffect } from 'react'
 
 export default function CourseCard(props) {
-  let paid = false;
-  for (let index = 0; index < props.myCourses.length; index++) {
-    if (props.myCourses[index].id == props.course.id) {
-      paid = true;
-    }
-  }
+  const [paid,setPaid] = useState(false)
 
-  if (props.payed) {
-    paid = true;
-  }
+  useEffect(() => {
+    for (let index = 0; index < props.myCourses.length; index++) {
+      if (props.myCourses[index].id == props.course.id) {
+        setPaid(true)
+      }
+    }
+  
+    if (props.payed) {
+      setPaid(true)
+    }
+  
+  }, [paid,props])
+
 
   return (
     <Link href={paid ? `/coursePage/lecture/${props.course.id}/${props.course.first_lecture_id}` : `/courseDetailPage/${props.course.id}`} >

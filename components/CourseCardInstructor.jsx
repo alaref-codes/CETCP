@@ -1,6 +1,8 @@
 import { Card,Stack,Text,CardBody,CardFooter,Button,Heading,Image} from '@chakra-ui/react'
 import Link from 'next/link'
+import * as URL from "@/constants"
 export default function CourseCardInstructor(props) {
+    console.log(props.course);
   return (
     <Link href={`/instructor/courseManage/2`} >
         <Card
@@ -13,7 +15,7 @@ export default function CourseCardInstructor(props) {
         <Image
             objectFit={'contain'}
             maxW={{ base: '100%', md: '200px' }}
-            src='https://img.freepik.com/free-vector/digital-code-abstract-3d-polygonal-wireframe-airplane-blue-night-sky-with-dots-stars-illustration-background_587448-634.jpg?w=1380&t=st=1685011207~exp=1685011807~hmac=b5885596e4d80be2993c684ce381bd30a92f1f714afc059f5e6bd1189b7bd265'
+            src={`${URL.STORAGE_URL}/${props.course.image}`}
             alt='Caffe Latte'
         />
 
@@ -25,11 +27,18 @@ export default function CourseCardInstructor(props) {
                 {props.course.description}
             </Text>
             </CardBody>
-
             <CardFooter>
-            <Button variant='solid' borderRadius={"1px"}>
-                إدارة / تعديل الدورة
-            </Button>
+            <Link href={`/instructor/courseManage/${props.course.id}`}>
+                <Button variant='solid' borderRadius={"1px"} marginLeft={"20px"}>
+                    إدارة / تعديل الدورة
+                </Button>
+            </Link>
+            {props.course.first_lecture_id && <Link href={`/coursePage/lecture/${props.course.id}/${props.course.first_lecture_id }`}>
+                <Button  variant='solid' borderRadius={"1px"}>
+                    عرض صفحة الدورة
+                </Button>
+            </Link> }
+
             </CardFooter>
         </Stack>
         </Card>

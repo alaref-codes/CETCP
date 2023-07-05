@@ -1,6 +1,6 @@
-import Loading from '../../components/Loading'
+import Loading from "@/components/Loading"
 import { useRouter } from 'next/router';
-import {React,useRef} from 'react';
+import {useRef,useEffect, useState} from 'react';
 import useSWR from 'swr';
 import axios from 'axios';
 import NotFound from '../notFound';
@@ -19,15 +19,18 @@ import {
     SimpleGrid,
     StackDivider,
     useColorModeValue,
-    List,
-    ListItem,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter 
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Link 
   } from '@chakra-ui/react';
   import * as URL from "@/constants"
   import { useToast } from '@chakra-ui/react';
   import { useMutation } from '@tanstack/react-query';
 
-
+  async function getUserData(token) {
+    return await fetch(`${URL.API_URL}/user-show`, {
+      headers: {'Authorization': `Bearer ${token}`} })
+    .then(res => res.json())
+  }
+  
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
   export default function CourseDetailPage() {
     const toast = useToast()
@@ -36,11 +39,20 @@ import {
     const initialRef = useRef(null)
     const finalRef = useRef(null)  
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [ userData, setUserData ] = useState(null);
 
 
+    useEffect(() => {
+      if (localStorage.getItem("token") && localStorage.getItem("token") != "null"){
+        getUserData(localStorage.getItem("token")).then((data) => {
+          setUserData(data.data);
+        });  
+      }      
+    }, [])
+    
         
     const purchaseCourse = async () =>{
-      if (localStorage.getItem("token") == "null") {
+      if (localStorage.getItem("token") == "null" || !localStorage.getItem("token")) {
         router.push("/signin")
       }
       return axios.post(`${URL.API_URL}/courses-buy/${data.data.id}`,{},{headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }}).then(res => res.data)
@@ -164,7 +176,10 @@ import {
                   <Heading>الدورة: {data.data.name}</Heading>
                   <chakra.p>المدرب: {data.data.trainer_name}</chakra.p>
                   <Text as="h4">تكلفة الدورة: {data.data.price}</Text>
-                  <Text as="h4">رصيدك الحالي: 333</Text>
+                  {userData ? 
+                  (<Text as="h4">رصيدك الحالي: {userData.account.balance}</Text>) : 
+                  (<Link href="/signin">تسجيل الدخول</Link>)}
+                  
                 </ModalBody>
 
                 <ModalFooter>

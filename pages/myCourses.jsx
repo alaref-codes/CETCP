@@ -23,7 +23,6 @@ export default function myCourses() {
     setIsLoading(true)
     if (isLoggedIn) {
       getMyCourses(token).then(data =>{
-        console.log(data);
         setData(data)})      
     }
     setIsLoading(false)
@@ -34,7 +33,7 @@ export default function myCourses() {
   return (
     <>
     <Box borderBottom="1px solid gray" position={"relative"} bg='blue.50' h='250px'>
-      <Heading as={"h1"} fontSize={"6xl"} position={"absolute"} bottom={{base:"100px",md:"1px"}} right={"150px"} >كورساتي</Heading>
+      <Heading as={"h1"} fontSize={"6xl"} position={"absolute"} bottom={{base:"100px",md:"1px"}} right={"150px"} >الدورات الخاصة بك</Heading>
     </Box>
     
     <SimpleGrid width={"80%"} marginRight={"0px"} minChildWidth={"250px"} columns={"3"}  >

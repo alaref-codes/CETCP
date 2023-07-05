@@ -24,7 +24,6 @@ const theme = extendTheme({
 export default function App({ Component, pageProps }) {
   const queryClient = new QueryClient()
 
-
   if (Component.getLayout) {
     return Component.getLayout(
       <AuthProvider>

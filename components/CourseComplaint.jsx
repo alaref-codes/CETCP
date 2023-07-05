@@ -3,8 +3,12 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import * as URL from '@/constants'
 import axios from "axios";
+import { useRouter } from 'next/router';
+export * as u from '@/utils'
 
 export default function CourseComplaint() {
+  const router = useRouter();
+
     const form = useForm({
         defaultValues: {
           complaint: "",
@@ -15,8 +19,10 @@ export default function CourseComplaint() {
     const toast = useToast()
     
     const createComplaint = async ({variables}) =>{
-      console.log(variables);
-        return axios.post(`${URL.API_URL}/complaints`,{
+      if (localStorage.getItem("token") == "null" || !localStorage.getItem("token")) {
+        router.push("/signin")
+      }
+      return axios.post(`${URL.API_URL}/complaints`,{
             complaint_type_id: variables.complaint_type,
             complaint_description: variables.complaint
         },{headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }}).then(res => res.data)

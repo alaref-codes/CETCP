@@ -14,7 +14,7 @@ import {
   Heading,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
+import { useContext, useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
@@ -24,7 +24,13 @@ import axios from 'axios';
 import * as URL from '@/constants'
 
 import { useRouter } from 'next/router';
-    
+
+async function getUserData(token) {
+  return await fetch(`${URL.API_URL}/user-show`, {
+    headers: {'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
+
   export default function SigninCard() {
     const [showPassword, setShowPassword] = useState(false);
     const { login } = useContext(AuthContext);
@@ -39,7 +45,16 @@ import { useRouter } from 'next/router';
 
     const url = `${URL.API_URL}/login`
 
-
+      // useEffect(() => {
+      //   if (localStorage.getItem("token")) {
+      //     if (localStorage.getItem("token") != "null") {
+      //       getUserData(localStorage.getItem("token")).then((data) => {
+      //           router.push("/")
+      //       });
+      //     }
+      //   }
+      // }, [])
+    
     const createUser = async ({variables}) =>{
       return axios.post(url,{
         email:variables.email,
@@ -63,7 +78,13 @@ import { useRouter } from 'next/router';
         })
         localStorage.setItem("token",data.data.token)
         login(data.data.token)
-        router.push("/")
+        getUserData(data.data.token).then((data) => {
+          if (data.data.type == "trainer") {
+            router.push("/instructor/courses")
+          } else {
+            router.push("/")
+          }
+        });
       },
 
       onError: () => {
@@ -166,6 +187,9 @@ import { useRouter } from 'next/router';
                   </Button>
                   <Link fontWeight={"semibold"} textAlign="center"  href="./signup" >
                     ليس لديك حساب ؟ 
+                  </Link>
+                  <Link fontWeight={"semibold"} textAlign="center"  href="./" >
+                    استمرار بدون تسجيل دخول
                   </Link>
                 </Stack>
               </Stack>
