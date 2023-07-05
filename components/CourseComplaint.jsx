@@ -4,7 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 import * as URL from '@/constants'
 import axios from "axios";
 import { useRouter } from 'next/router';
-export * as u from '@/utils'
 
 export default function CourseComplaint() {
   const router = useRouter();
