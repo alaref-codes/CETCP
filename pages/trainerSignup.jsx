@@ -53,17 +53,17 @@ import {
     }
 
     const createUser = async ({variables}) =>{
+      let formData = new FormData();    
+      formData.append('name', variables.username); 
+      formData.append('email', variables.email);
+      formData.append('password', variables.password);
+      formData.append('password_confirmation', variables.password);
+      formData.append('image', variables.image[0]);
+      formData.append('gender', variables.gender);
+      formData.append('phone', variables.number);
+      formData.append('type', 'trainer');
 
-      return axios.post(url,{
-        name: variables.username,
-        email:variables.email,
-        password:variables.password,
-        password_confirmation: variables.password,
-        gender: variables.gender,
-        phone: variables.number,
-        type: "trainer"
-      }).then(res => res.data)
-
+      return axios.post(url,formData,{headers:{ "Content-Type": 'multipart/form-data'}}).then(res => res.data)
     }
   
     const { register,handleSubmit, formState } = form;
@@ -75,13 +75,15 @@ import {
       retry: 2,
       onSuccess: (data) => {
         toast({
+          position: 'top',
           title: 'تم تسجيل الدخول',
           status: 'success',
           duration: 9000,
           isClosable: true,
         })
+        localStorage.setItem("token",data.data.token)
         login(data.data.token)
-        router.push("/")
+        router.push("/instructor/courses")
       },
 
       })
@@ -130,12 +132,12 @@ import {
                                     message: "يجب تعبئة هذا الحقل"
                                   },
                                   pattern: {
-                                    value: /^09[124]\d{8}$/,
+                                    value: /^(09|2189)[124]\d{7}$/,
                                     message: "الرجاء إدخال رقم صالح في دولة ليبيا"
                                   }
                                 })}></Input>
                                 <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
-                                {/* <Text color={"red"} fontSize={"12px"} >{mutation.error.response.data.message?.phone ? mutation.error.response.data.message?.phone : "" }</Text> */}
+                                <Text color={"red"} fontSize={"12px"} >{mutation.isError &&  mutation.error.response.data.message?.phone}</Text>
                           </FormControl>
                       </Box>
                     </HStack>
@@ -153,8 +155,11 @@ import {
                                 })} />
                     </FormControl>
                     <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
-                    {/* <Text color={"red"} fontSize={"12px"} >{mutation.error.response.data.message?.email && mutation.error.response.data.message?.email}</Text> */}
-
+                    <Text color={"red"} fontSize={"12px"} >{mutation.isError &&  mutation.error.response.data.message?.email}</Text>
+                    <FormControl >
+                      <FormLabel>صورة المستخدم</FormLabel>
+                      <input width={"50%"} id={"image"} bg={"white"} type='file'border={"none"} {...register("image")} />
+                    </FormControl>
                     <FormControl>
                       <FormLabel  htmlFor='gender' >الجنس</FormLabel>
                       <RadioGroup id='gender' onChange={setValue} value={value} {...register("gender", {

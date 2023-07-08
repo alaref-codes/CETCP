@@ -63,6 +63,7 @@ import {
       retry: 2,
       onSuccess: () => {
         toast({
+          position: 'top',
           title:'تم الإشتراك في الدورة بنجاح',
           status: 'success',
           duration: 9000,
@@ -70,6 +71,15 @@ import {
         })
         router.push(`/coursePage/lecture/${data.data.id}/${data.data.first_lecture_id}`)
       },
+      onError: () => {
+        toast({
+          position: 'top',
+          title:'رصيدك غير كاف للإشتراك في الدورة',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
+      }
 
       })
 
@@ -143,7 +153,6 @@ import {
               </Box>
               
             </Stack>
-  
             <Button
               rounded={'none'}
               onClick={onOpen}
@@ -179,7 +188,8 @@ import {
                   {userData ? 
                   (<Text as="h4">رصيدك الحالي: {userData.account.balance}</Text>) : 
                   (<Link href="/signin">تسجيل الدخول</Link>)}
-                  
+                  <Text color={"darkred"} fontSize={"20px"} >{mutation.isError && mutation.error.response.data?.message}</Text>
+
                 </ModalBody>
 
                 <ModalFooter>

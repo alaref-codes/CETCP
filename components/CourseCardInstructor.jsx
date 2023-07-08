@@ -1,10 +1,11 @@
 import { Card,Stack,Text,CardBody,CardFooter,Button,Heading,Image} from '@chakra-ui/react'
 import Link from 'next/link'
 import * as URL from "@/constants"
+
 export default function CourseCardInstructor(props) {
-    console.log(props.course);
+
   return (
-    <Link href={`/instructor/courseManage/2`} >
+    <Link href={`/instructor/courseManage/${props.course.id}`} >
         <Card
         direction={{ base: 'column',md:"row" }}
         overflow='hidden'
@@ -22,10 +23,7 @@ export default function CourseCardInstructor(props) {
         <Stack>
             <CardBody>
             <Heading size='md'>{props.course.name}</Heading>
-
-            <Text py='2'>
-                {props.course.description}
-            </Text>
+            <div dangerouslySetInnerHTML={{ __html: props.course.description }}></div>
             </CardBody>
             <CardFooter>
             <Link href={`/instructor/courseManage/${props.course.id}`}>

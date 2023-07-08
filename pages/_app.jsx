@@ -3,7 +3,6 @@ import { ChakraProvider } from '@chakra-ui/react'
 import '@fontsource/tajawal/300.css'
 import '@fontsource/almarai/400.css';
 import { AuthProvider } from "@/context/AuthContext";
-
 import { extendTheme } from '@chakra-ui/react'
 import { 
   QueryClient,

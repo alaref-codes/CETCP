@@ -18,13 +18,16 @@ import {
   import * as URL from '@/constants'
   import { AuthContext } from '@/context/AuthContext';
   import { useForm } from 'react-hook-form';
+  import { useToast } from '@chakra-ui/react';
   import { 
     useQuery,
     useMutation
   } from '@tanstack/react-query';
-  import React from 'react';
+import React from 'react';
+import { useRouter } from 'next/router';
+import ProfileForm from '@/components/ProfileForm';
 
-async function getUserData(token) {
+  async function getUserData(token) {
   return await fetch(`${URL.API_URL}/user-show`, {
     headers: {'Authorization': `Bearer ${token}`} })
   .then(res => res.json())
@@ -34,39 +37,28 @@ async function getUserData(token) {
 }
 
   export default function ProfilePage() {
-    const { isLoggedIn, token,login } = React.useContext(AuthContext);
+    const { isLoggedIn, token } = React.useContext(AuthContext);
     const [data, setData] = React.useState(undefined);
+    const router = useRouter();
+    const toast = useToast();
+    let form = useForm();
 
     React.useEffect(() => {
-      if (!isLoggedIn) {
-        const storedToken = localStorage.getItem("token");
-        if (storedToken != "null") {
-          login(token)
-          localStorage.setItem("token", storedToken)
-          getUserData(storedToken).then((data) => {
+        if (localStorage.getItem("token") && localStorage.getItem("token") != "null") {
+          localStorage.setItem("token", localStorage.getItem("token"))
+          getUserData(localStorage.getItem("token")).then((data) => {
             setData(data);
           });
+        } else { 
+          router.push("/signin");
         }
-      } else {
-        getUserData(token).then((data) => {
-          setData(data);
-          localStorage.setItem("token", token)
-
-        });
-      }
-    
     },[])
-    
-    let form = undefined
-    console.log(data);
-    console.log(isLoggedIn);
-    console.log(token);
+
     if (data) {
       form = useForm({
         defaultValues: {
-          username: "nice",
-          email: data.email,
-          password: data.password,
+          username: data.data.name,
+          email: data.data.email,
         }
       });
     } else {
@@ -74,17 +66,17 @@ async function getUserData(token) {
         defaultValues: {
           username: "",
           email: "",
-          password: "",
         }
       });
     }
-    const { register } = form;
+    const { register,handleSubmit,formState } = form;
 
     const mutation = useMutation({
       mutationFn: () => {console.log("hello world");},
       retry: 2,
       onSuccess: () => {
         toast({
+          position: 'top',
           title: 'تم تحديث الحساب بنجاح',
           status: 'success',
           duration: 4000,
@@ -109,88 +101,7 @@ async function getUserData(token) {
         align={'center'}
         justify={'center'}
         bg={useColorModeValue('gray.50', 'gray.800')}>
-        <Stack
-          spacing={4}
-          w={'full'}
-          maxW={'md'}
-          bg={useColorModeValue('white', 'gray.700')}
-          rounded={'xl'}
-          boxShadow={'lg'}
-          p={6}
-          my={12}>
-          <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-            تعديل ملفك الشخصي
-          </Heading>
-          <FormControl id="userIcon">
-            <FormLabel>User Icon</FormLabel>
-            <Stack direction={['column', 'row']} spacing={6}>
-              <Center>
-                <Avatar size="xl" src="/">
-                  <AvatarBadge
-                    as={IconButton}
-                    size="sm"
-                    rounded="full"
-                    top="-10px"
-                    colorScheme="red"
-                    aria-label="remove Image"
-                    icon={<SmallCloseIcon />}
-                  />
-                </Avatar>
-              </Center>
-              <Center w="full">
-                <Button w="full">Change Icon</Button>
-              </Center>
-            </Stack>
-          </FormControl>
-          <FormControl id="username" isRequired>
-            <FormLabel>اسم المستخدم</FormLabel>
-            <Input
-              placeholder={"randomtext"}
-              _placeholder={{ color: 'gray.500' }}
-              type="text"
-              {...register("username")}
-            />
-          </FormControl>
-          <FormControl id="email" isRequired>
-            <FormLabel>البريد الالكتروني</FormLabel>
-            <Input
-              placeholder=""
-              _placeholder={{ color: 'gray.500' }}
-              type="email"
-              {...register("email" )}
-            />
-          </FormControl>
-          <FormControl id="password" isRequired>
-            <FormLabel>كلمة المرور</FormLabel>
-            <Input
-              placeholder="كلمة المرور"
-              _placeholder={{ color: 'gray.500' }}
-              type="password"
-              {...register("password")}
-
-            />
-          </FormControl>
-          <Stack spacing={6} direction={['column', 'row']}>
-            <Button
-              bg={'red.400'}
-              color={'white'}
-              w="full"
-              _hover={{
-                bg: 'red.500',
-              }}>
-              Cancel
-            </Button>
-            <Button
-              bg={'blue.400'}
-              color={'white'}
-              w="full"
-              _hover={{
-                bg: 'blue.500',
-              }}>
-              Submit
-            </Button>
-          </Stack>
-        </Stack>
+        {data && <ProfileForm user={data.data} ></ProfileForm>}
       </Flex>
     );
   }

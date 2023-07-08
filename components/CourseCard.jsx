@@ -8,11 +8,13 @@ export default function CourseCard(props) {
   const [paid,setPaid] = useState(false)
 
   useEffect(() => {
+    if ( typeof(props.myCourses) !== "undefined" && props.myCourses !== null ) {
     for (let index = 0; index < props.myCourses.length; index++) {
       if (props.myCourses[index].id == props.course.id) {
         setPaid(true)
       }
     }
+  }
   
     if (props.payed) {
       setPaid(true)

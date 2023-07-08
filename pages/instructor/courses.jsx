@@ -1,16 +1,16 @@
-import useSWR from 'swr'
 import CourseCardInstructor from "../../components/CourseCardInstructor"
 import { useFormik } from "formik";
 import Link from 'next/link';
 import * as URL from '@/constants'
-import {Flex,Box,HStack,Heading, SimpleGrid, FormControl, Button, Spacer, IconButton} from "@chakra-ui/react"
+import {Flex,Box,HStack,Heading, SimpleGrid, FormControl, Button, Spacer, Card,CardBody,CardHeader, Text} from "@chakra-ui/react"
 import { SearchIcon } from '@chakra-ui/icons';
 import { Input } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import InstructorNavbar from '@/components/InstructorNavbar'
 import { AuthContext } from '@/context/AuthContext';
-
-
+import { useRouter } from 'next/router';
+import Loading from '@/components/Loading';
+import Footer from "@/components/Footer";
 
 async function getMyCourses(token) {
   return await fetch(`${URL.API_URL}/courses-trainers`, {
@@ -20,11 +20,20 @@ async function getMyCourses(token) {
 
 export default function InstructorCourses() {
   const [data,setData] = useState(null)
-
+  const router = useRouter();
+  const { user, isLoggedIn } = useContext(AuthContext);
+  const [isLoading,setIsLoading] = useState(true);
+  console.log(isLoggedIn);
   useEffect(() => { 
+    setIsLoading(true)
+    if (localStorage.getItem("token") && localStorage.getItem("token") != "null") { 
       getMyCourses(localStorage.getItem("token")).then(data =>{
-        console.log(data);
-        setData(data)})      
+        console.log(localStorage.getItem("token"));
+        setData(data)
+        setIsLoading(false)
+      })       
+    }
+    
   }, [])  
 
   const formik = useFormik({
@@ -36,14 +45,13 @@ export default function InstructorCourses() {
     },
   })
 
-  // const searchToggle = () => {
-  //   setSearchIsOpen(!searchIsOpen)
-  // }
-
-
+  if (isLoading) {
+    return <Loading></Loading>
+  }
 
   return (
     <>
+      <InstructorNavbar></InstructorNavbar>
       <Box>
       <Flex  direction={"column"} borderBottom="1px solid gray"  bg='blue.50' h='250px'>
         <Box marginX={{base:"50px",md:"100px"}} marginY={"80px"}>
@@ -64,12 +72,17 @@ export default function InstructorCourses() {
         <Link href={"/instructor/courseManage"}><Button bg={"blue.100"} borderRadius={"none"} padding={"10px"} width={{base:"50%",md:"initial"}} >إضافة دورة</Button></Link>
 
       </Flex>
-        <SimpleGrid width={"80%"} margin={"50px auto"} gap={"50px"} >
+        {data.data.data.length > 0 ? <SimpleGrid width={"80%"} margin={"50px auto"} gap={"50px"} >
               {data && data.data.data.map(course => (
               <CourseCardInstructor key={course.id} withDescription={false}  course={course} />
               ))}
-        </SimpleGrid>
-
+        </SimpleGrid> : <Card border={"1px solid black"} >
+        <CardBody>
+          <Text textAlign={"center"}  >لا يوجد لديك دورات بعد</Text>
+        </CardBody>
+      </Card>
+      }
+      <Footer></Footer>
       </Box>
     </>
   )

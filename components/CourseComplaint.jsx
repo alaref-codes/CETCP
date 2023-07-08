@@ -34,6 +34,7 @@ export default function CourseComplaint() {
         retry: 2,
         onSuccess: () => {
           toast({
+            position: 'top',
             title: 'تم إرسال شكواك',
             status: 'success',
             duration: 9000,

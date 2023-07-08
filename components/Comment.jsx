@@ -30,6 +30,7 @@ export default function Comment({lectureId}) {
         onSuccess: () => {
           console.log("success");
           toast({
+            position: 'top',
             title: 'تم إرسال تعليقك',
             status: 'success',
             duration: 9000,

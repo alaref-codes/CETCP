@@ -19,49 +19,117 @@ import {
     MenuOptionGroup,
     MenuDivider,
     Heading,
+    HStack,
+    Image,
   } from '@chakra-ui/react';
+  import { Parser } from 'html-to-react'
+  import useSWR from 'swr'
   import { useForm,  useFormContext,
     Controller,
     useController } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
-  import { useRef } from 'react';
+  import { useRef,useState } from 'react';
   import { Editor } from '@tinymce/tinymce-react';
-
+  import axios from 'axios';
   import { useMutation } from '@tanstack/react-query';
+  import * as URL from '@/constants'
+  import FormData from 'form-data'
+  const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
+  const getCategories = () => {
+    return useSWR(`${URL.API_URL}/categories`, fetcher);
+  }
   
-  export default function CourseInfoTabForm() {
+  export default function CourseInfoTabForm({course}) {
+    const [picture, setPicture] = useState(null);
+    const [imgData, setImgData] = useState(null);
     const editorRef = useRef(null);
-    const form = useForm({
-      defaultValues: {
-        title: "",
-        header: "",
-        description: "Hello world",
-        category: "",
+    let form = useForm();
+    const onChangePicture = e => {
+      console.log("on change button");
+      if (e.target.files[0]) {
+        console.log("picture: ", e.target.files);
+        setPicture(e.target.files[0]);
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          console.log(reader.result);
+          setImgData(reader.result);
+        });
+        reader.readAsDataURL(e.target.files[0]);
       }
-    });
+    };
+    let formData = new FormData();    //formdata object
+    if (course) {
+      formData.append("image", `${URL.STORAGE_URL}/${course.data.image}`)
+      form = useForm({
+        defaultValues: {
+          name: course.data.name,
+          header: course.data.header,
+          description: Parser().parse(course.data.description),
+          category: course.data.category_id,
+          length: course.data.length,
+          price: course.data.price
+        }
+      });
+    } else {
+      form = useForm({
+        defaultValues: {
+          name: "",
+          header: "",
+          description: "",
+          category: "",
+          length: "",
+          price: ""
+        }
+      });
+    }
     const toast = useToast()
     const { register,handleSubmit, formState,control } = form;
 
     const { errors,isDirty } = formState
-    console.log(isDirty);
 
+    function insert_contents(inst){
+      inst.setContent(course.data.description);  
+  }
+  
+    const createCourse = async ({variables}) =>{
+
+      formData.append('name', variables.name);   //append the values with key, value pair
+      formData.append('header', variables.header);
+      formData.append('description', variables.description);
+      formData.append('image', variables.image[0]);
+      formData.append('category_id', variables.category);
+      formData.append('price', variables.price);
+      formData.append('length', variables.length);
+      
+      console.log(variables.image[0]);
+      return axios.post(`${URL.API_URL}/courses`,formData,{headers:
+         { Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": 'multipart/form-data'}}).then(res => res.data)
+
+    }
+
+    const { data } = getCategories()
 
     const mutation = useMutation({
-      mutationFn: createUser,
+      mutationFn: createCourse,
       retry: 2,
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast({
-          title: 'تم تسجيل الدخول',
+          position: 'top',
+          title: 'تم إضافة دورة جديدة بنجاح',
           status: 'success',
           duration: 9000,
           isClosable: true,
         })
-        login(data.data.token)
-        router.push("/")
       },
 
       })
+      
+    let categories = null;
+    if (data) {
+      categories = data.data
+    }
 
     const onSubmit = (data) => {
       mutation.mutate({variables:data})
@@ -82,7 +150,7 @@ import {
               <Text fontSize={"xl"}> ملاحظة: هذه المعلومات ستعرض في الواجهة الرئيسية الخاصة بالدورة</Text>
               <FormControl >
                 <FormLabel>عنوان الدورة</FormLabel>
-                <Input id={"title"} bg={"white"} type="text" {...register("title" , {
+                <Input id={"name"} bg={"white"} type="text" {...register("name" , {
                             required: {
                               value: true,
                               message: "يجب تعبئة هذا الحقل"
@@ -109,6 +177,7 @@ import {
                   <FormControl >
                     <Editor apiKey='44gkr7bzvz2bcnl44931u48mvwpph88wtdbk1ycqyg2tqw4k'
                       init={{
+                        init_instance_callback: insert_contents,
                         height: 500,
                         menubar: false,
                         plugins: [
@@ -128,15 +197,13 @@ import {
                   </FormControl>
                 )}
               />
-              <FormControl >
-                <FormLabel>خلفية الدورة</FormLabel>
-                <Input id={"courseImage"} bg={"white"} type="file" border={"none"} {...register("courseImage" , {
-                            required: {
-                              value: true,
-                              message: "يجب تعبئة هذا الحقل"
-                            }
-                          })} />
-              </FormControl>
+              <HStack margin={"30px"} padding={"30px"} border={"2px solid black"}>
+                <FormControl >
+                  <FormLabel>خلفية الدورة</FormLabel>
+                  <input width={"50%"} id={"image"} bg={"white"} type='file' onChange={onChangePicture} border={"none"} {...register("image")} />
+                </FormControl>
+                <Image margin={"10px"} padding={"10px"}  src={`${URL.STORAGE_URL}/${course.data.image}`} objectFit={"fill"} h="150px" w="150"></Image>
+              </HStack>
               <FormControl as={GridItem} colSpan={[6, 3]}>
                 <FormLabel
                   htmlFor="country"
@@ -163,15 +230,23 @@ import {
                       message: "يجب تعبئة هذا الحقل"
                     }
                   })}>
-                  <option>البرمجة</option>
-                  <option>الاتصالات</option>
-                  <option>الشبكات</option>
-                  <option>تحكم آلي</option>
+                  {categories && categories.map(category => (
+                    <option value={category.id} >{category.name}</option>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl >
                 <FormLabel>ثمن الدورة ( بالدينار الليبي )</FormLabel>
                 <Input id="price" bg={"white"} type="number" {...register("price" , {
+                    required: {
+                      value: true,
+                      message: "يجب تعبئة هذا الحقل"
+                    }
+                  })} />
+              </FormControl>
+              <FormControl >
+                <FormLabel>طول الدورة</FormLabel>
+                <Input id="length" bg={"white"} type="number" {...register("length" , {
                     required: {
                       value: true,
                       message: "يجب تعبئة هذا الحقل"

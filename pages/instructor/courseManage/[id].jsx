@@ -1,11 +1,23 @@
 import CourseInfoTabForm from '@/components/CourseInfoTabForm'
 import CourseLectureInfoTab from '@/components/CourseLectureInfoTab'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
-
-import { Tabs,Flex, TabList,Text, TabPanels,Box, Tab, TabPanel, Heading } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import { Tabs,Flex, TabList,Text, TabPanels,Box, Tab, TabPanel, Heading, Button } from '@chakra-ui/react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
+import * as URL from "@/constants"
+import Loading from '@/components/Loading'
+import useSWR from 'swr';
+import axios from 'axios'
+
+const fetcher = async (url) => await axios.get(url).then((res) => res.data);
+
 export default function CourseManage() {
+  const router = useRouter();
+  
+  const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
+  
+  if (isLoading) <Loading></Loading>
   return (
     <Box>
         <Box>
@@ -25,7 +37,6 @@ export default function CourseManage() {
               </Flex>
               <Heading marginRight={"20px"} marginTop={"20px"} >قم بتعبئة بيانات الدورة الخاصة بك</Heading>
 
-
           </Box>
       <Box width={"90%"} margin={"50px auto"}>
 
@@ -39,10 +50,10 @@ export default function CourseManage() {
 
             <TabPanels>
                 <TabPanel>
-                  <CourseInfoTabForm></CourseInfoTabForm>
+                  {data && <CourseInfoTabForm course={data} ></CourseInfoTabForm>}
                 </TabPanel>
                 <TabPanel>
-                  <CourseLectureInfoTab></CourseLectureInfoTab>  
+                  <CourseLectureInfoTab></CourseLectureInfoTab>
                 </TabPanel>
                 <TabPanel>
                 <p>three!</p>

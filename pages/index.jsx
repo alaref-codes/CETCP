@@ -1,32 +1,34 @@
 import Head from 'next/head'
-import { Inter } from 'next/font/google'
 import Hero from '../components/Hero'
 import CoursesCards from '@/components/CoursesCards'
 import SubHeader from '@/components/SubHeader'
 import { Box } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
-import { redirect } from 'next/navigation'
-async function getUserData(token) {
-  return await fetch(`${URL.API_URL}/user-show`, {
-    headers: {'Authorization': `Bearer ${token}`} })
-  .then(res => res.json())
-}
+import { useEffect, useState,useContext } from 'react'
+import { AuthContext } from '@/context/AuthContext'
+import { useRouter } from 'next/router'
+import Loading from '@/components/Loading'
 
 export default function Home() {
-  const [render , setRender] = useState(false)
+  const router = useRouter();
+  const { user, isLoggedIn } = useContext(AuthContext);
+  const [isLoading,setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (localStorage.getItem("token") != "null") {
-      console.log(localStorage.getItem("token"));
-      getUserData(localStorage.getItem("token")).then((data) => {
-        if (data.data.type == "trainer") {
-          redirect("/instructor/courses")
-        }
-      });
+    if (isLoggedIn && typeof(user) !== "undefined") {
+      if (user.type === "trainer") {
+        router.push("/instructor/courses");
+      } else {
+        setIsLoading(false);
+      }
+    } else { 
+      setIsLoading(false);
     }
-    setRender(true)
-  }, [])
 
+  }, [user])
+  
+  if (isLoading) {
+    return <Loading></Loading>
+  }
   return (
     <>
       <Head>
@@ -35,9 +37,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
+      {isLoading ? <Loading></Loading> : 
+      <>
         <Hero></Hero>
         <SubHeader></SubHeader>
-        {render && <CoursesCards/>}
+          <CoursesCards/></> }
         <Box height="100px"/>
       </main>
     </>

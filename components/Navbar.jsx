@@ -39,7 +39,6 @@ import { AuthContext } from '@/context/AuthContext';
 
 import axios from 'axios'
 
-
 async function getUserData(token) {
   return await fetch(`${URL.API_URL}/user-show`, {
     headers: {'Authorization': `Bearer ${token}`} })
@@ -56,35 +55,40 @@ export default function Navbar() {
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
   const [searchIsOpen, setSearchIsOpen] = useState(false);
-  const { isLoggedIn, token, logout,login } = useContext(AuthContext);
-  const [myData, setMyData] = useState(undefined);
+  const { user, isLoggedIn, token, logout,login } = useContext(AuthContext);
+  const [myData, setMyData] = useState(null);
+  const [mainLink,setMainLink] = useState(null);
 
   console.log("------NAVBAR------");
   console.log(`is LoggedIn : ${isLoggedIn}`);
   console.log(`token : ${token}`);
+  console.log(user);
 
   useEffect(() => {
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("token");
-      if (storedToken != "null") {
-        getUserData(storedToken).then((data) => {
-          setMyData(data);
-          login(storedToken)
-        });
+      if (storedToken) {
+        if (storedToken && storedToken != "null") {
+          getUserData(storedToken).then((data) => {
+            setMyData(data);
+            if (data.data.type == "trainer") {
+              setMainLink("/instructor/courses") 
+            }   
+            login(storedToken)
+          });
+        }
       }
     } else {
       login(token);
       getUserData(token).then((data) => {
         setMyData(data);
+        if (data.data.type == "trainer") {
+          setMainLink("/instructor/courses") 
+        }
       });
     }
   }, []);
   
-  const onSubmit = (values) => {
-    router.push(`/searchPage/${values.search}`)
-
-  }
-
   const searchToggle = () => {
     setSearchIsOpen(!searchIsOpen)
   }
@@ -132,24 +136,24 @@ export default function Navbar() {
           <Link
               textAlign={{ base: 'center', md: 'left' }}
               color={useColorModeValue('gray.800', 'white')}
-              href='/'
+              href={mainLink ? mainLink : "/"}
               >
           <Image src={"/cet_logo.png"} alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
               <Flex display={{ base: 'flex', md: 'none' }}>
-              {isLoggedIn &&  (
+              {myData &&  (
                 <Menu>
                 <MenuButton> 
                 <Avatar
                     size={'md'}
                     src={
-                      'https://bit.ly/sage-adebayo'
+                      `${URL.USER_IMAGE}/${myData.data.image}`
                     }
                   />
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link  href={"/profile/2"}>
+                      <Link  href={`/profile/${myData.data.id}`}>
                         <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                       </Link> 
                     </MenuItem>     
@@ -178,12 +182,12 @@ export default function Navbar() {
                 <Avatar
                     size={'md'}
                     src={
-                      'https://bit.ly/sage-adebayo'
+                      `${URL.USER_IMAGE}/${myData.data.image}`
                     }
                   />
                   </MenuButton>
                   <MenuList>
-                  <Link  href={"/profile/2"}>
+                  <Link  href={`profile/${myData.data.id}`}>
                     <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                   </Link>
                   <MenuItem>
@@ -201,7 +205,7 @@ export default function Navbar() {
                     display={{ base: 'none', md: 'inline-flex' }}
 
                     spacing={6}>
-                    <Link href={"/signup"} >
+                    <Link href={"/trainerSignup"} >
                       <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
                     </Link>
                     <Link
@@ -240,15 +244,15 @@ export default function Navbar() {
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
   const getCategories = () => {
-    return useSWR(`${URL.API_URL}/categories`, fetcher, {refreshInterval:1000});
+    return useSWR(`${URL.API_URL}/categories`, fetcher);
   }
 
   const DesktopNav = () => {
-    const linkColor = useColorModeValue('gray.900', 'gray.500');
-    const linkHoverColor = useColorModeValue('blue.900', 'blue');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+    const [userData, setUserData] = useState(null)
+
     
-    const { data, error,isLoading } = getCategories()
+    const { data,isLoading } = getCategories()
     if (isLoading) return <Text>Loading...</Text>;
     NAV_ITEMS[0].children = data.data;
     return (
@@ -433,7 +437,7 @@ export default function Navbar() {
   const NAV_ITEMS = [
     {
       label: 'الفئات',
-      children: null,
+      children: [],
       href: null
     },
     {

@@ -1,4 +1,5 @@
 import { createContext, useState,useEffect } from "react";
+import * as URL from '@/constants'
 const AuthContext = createContext();
 
 
@@ -11,12 +12,24 @@ async function getUserData(token) {
 function AuthProvider(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState(null);
-  const [myData, setMyData] = useState(undefined);
+  const [user, setUser] = useState(undefined);
 
   const login = (jwtToken) => {
     setIsLoggedIn(true);  
     setToken(jwtToken);
+    getUserData(jwtToken).then(data => {
+      setUser(data.data)
+    })
   };
+
+  // useEffect(() => {
+  //   if (localStorage.getItem("token") && localStorage.getItem("token") != "null"){
+  //     getUserData(localStorage.getItem("token")).then((data) => {
+  //       console.log(data.data);
+  //       setUser(data);
+  //     });
+  //   }
+  // }, [])
 
   const logout = () => {
     setIsLoggedIn(false);
@@ -28,23 +41,9 @@ function AuthProvider(props) {
     token,
     login,
     logout,
+    setUser,
+    user
   };
-//   useEffect(() => {
-
-//     if (!isLoggedIn) {
-//       const storedToken = localStorage.getItem("token");
-//       if (storedToken != "null") {
-//         getUserData(storedToken).then((data) => {
-//           setMyData(data);
-//         });
-//       }
-//     } else {
-//       getUserData(token).then((data) => {
-//         setMyData(data);
-//       });
-//     }
-// }, []);
-
 
   return <AuthContext.Provider value={value} {...props} />;
 }

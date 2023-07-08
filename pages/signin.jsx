@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 import { useToast } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { AuthContext } from '@/context/AuthContext';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import * as URL from '@/constants'
 
@@ -33,7 +33,7 @@ async function getUserData(token) {
 
   export default function SigninCard() {
     const [showPassword, setShowPassword] = useState(false);
-    const { login } = useContext(AuthContext);
+    const { login,user,isLoggedIn } = useContext(AuthContext);
     const router = useRouter();
 
     const form = useForm({
@@ -43,19 +43,23 @@ async function getUserData(token) {
       }
     });
 
-    const url = `${URL.API_URL}/login`
-
-      // useEffect(() => {
-      //   if (localStorage.getItem("token")) {
-      //     if (localStorage.getItem("token") != "null") {
-      //       getUserData(localStorage.getItem("token")).then((data) => {
-      //           router.push("/")
-      //       });
-      //     }
-      //   }
-      // }, [])
+    useEffect(() => {
+      if (localStorage.getItem("token") && localStorage.getItem("token") != "null") {
+        getUserData(localStorage.getItem("token")).then(data => {
+          console.log(data.data);
+          if (data.data.type === "trainer") {
+            router.push("/instructor/courses");
+          } else {
+            router.push("/");
+          }
+        })
+      }
+    }, [user,isLoggedIn])
     
-    const createUser = async ({variables}) =>{
+  
+    const url = `${URL.API_URL}/login`
+    
+    const signin = async ({variables}) =>{
       return axios.post(url,{
         email:variables.email,
         password:variables.password,
@@ -68,49 +72,35 @@ async function getUserData(token) {
     const { errors } = formState
 
     const mutation = useMutation({
-      mutationFn: createUser,
+      mutationFn: signin,
       onSuccess: (data) => {
         toast({
+          position: 'top',
           title: 'تم تسجيل الدخول',
           status: 'success',
           duration: 9000,
           isClosable: true,
         })
         localStorage.setItem("token",data.data.token)
+        console.log(data.data);
         login(data.data.token)
-        getUserData(data.data.token).then((data) => {
-          if (data.data.type == "trainer") {
-            router.push("/instructor/courses")
-          } else {
-            router.push("/")
-          }
-        });
+        router.push("/")
       },
 
       onError: () => {
         toast({
+          position: 'top',
           title: 'الرجاء التأكد من البريد الإلكتروني وكلمة المرور',
           status: 'error',
           duration: 9000,
           isClosable: true,
         })
-  
       }
       })
 
     const onSubmit = (data) => {
       mutation.mutate({variables:data})
     }
-
-
-    // if (mutation.isSuccess) {
-      // login(mutation.data.data.token)
-    // }  
-
-    // if (mutation.error) {
-    //   console.log(mutation.error.response.data.message);
-    // }
-
 
     return (
       <Stack minH={'100vh'} direction={{ base: 'column', md: 'row' }}>

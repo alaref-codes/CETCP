@@ -59,11 +59,6 @@ export default function InstructorNavbar() {
   const [myData, setMyData] = useState(undefined);
   const [mainLink,setMainLink] = useState(null);
 
-  console.log("------NAVBAR------");
-  console.log(`is LoggedIn : ${isLoggedIn}`);
-  console.log(`token : ${token}`);
-  // console.log(user);
-
   useEffect(() => {
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("token");
@@ -138,19 +133,24 @@ export default function InstructorNavbar() {
               color={useColorModeValue('gray.800', 'white')}
               href={mainLink ? mainLink : "/"}
               >
-          <Image src={"/cet_logo.png"} alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src={"/cet_logo3.png"} alt="me" width={"100px"} height={"80px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
+          <Text borderLeft={{base: "none", md: "2px solid gray"}}  borderRight={{base: "2px solid gray", md:"none"}} paddingLeft={{base:"0px",md:"15px"}} marginLeft={{md:"20px"}} letterSpacing={"0.3rem"} fontWeight={"bold"} fontSize={"1.4rem"} color={"black"} >CETEP</Text>
+
               <Flex display={{ base: 'flex', md: 'none' }}>
               {myData &&  (
                 <Menu>
                 <MenuButton> 
                 <Avatar
                     size={'md'}
+                    src={
+                      `${URL.USER_IMAGE}/${myData.data.image}`
+                    }
                   />
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link  href={`profile/${myData.data.id}`}>
+                      <Link  href={`/profile/${myData.data.id}`}>
                         <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                       </Link> 
                     </MenuItem>     
@@ -179,12 +179,12 @@ export default function InstructorNavbar() {
                 <Avatar
                     size={'md'}
                     src={
-                      'https://bit.ly/sage-adebayo'
+                      `${URL.USER_IMAGE}/${myData.data.image}`
                     }
                   />
                   </MenuButton>
                   <MenuList>
-                  <Link  href={`profile/${myData.data.id}`}>
+                  <Link  href={`/profile/${myData.data.id}`}>
                     <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                   </Link>
                   <MenuItem>

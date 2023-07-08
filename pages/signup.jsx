@@ -19,7 +19,7 @@
     Link,
     VStack,
   } from '@chakra-ui/react';
-  import { useContext, useState,useEffect } from 'react';
+  import { useContext, useState } from 'react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
@@ -28,12 +28,6 @@
   import { useRouter } from 'next/router';
   import axios from 'axios';
   import * as URL from '@/constants'
-
-  async function getUserData(token) {
-    return await fetch(`${URL.API_URL}/user-show`, {
-      headers: {'Authorization': `Bearer ${token}`} })
-    .then(res => res.json())
-  }
   
   export default function Signup() {
     const [topping, setTopping] = useState("1")
@@ -51,6 +45,7 @@
         username: "",
         email: "",
         password: "",
+        password_confirmation: "",
         number: "",        
       }
     });
@@ -60,28 +55,19 @@
     }
 
     
-    useEffect(() => {
-      if (localStorage.getItem("token") != "null") {
-        getUserData(localStorage.getItem("token")).then((data) => {
-          if (data.data.type == "trainer") {
-            router.push("/instructor/courses")
-          } else {
-            router.push("/")
-          }
-        });
-      }
-    }, [])
-
     const createUser = async ({variables}) =>{
-      return axios.post(url,{
-        name: variables.username,
-        email:variables.email,
-        password:variables.password,
-        password_confirmation: variables.password,
-        gender: variables.gender,
-        phone: variables.number,
-        type: "student"
-      }).then(res => res.data)
+      let formData = new FormData();    //formdata object
+      formData.append('name', variables.username);   //append the values with key, value pair
+      formData.append('email', variables.email);
+      formData.append('password', variables.password);
+      formData.append('password_confirmation', variables.password_confirmation);
+      formData.append('image', variables.image[0]);
+      formData.append('gender', variables.gender);
+      formData.append('phone', variables.number);
+      formData.append('type', 'student');
+
+
+      return axios.post(url,formData,{headers:{ "Content-Type": 'multipart/form-data'}}).then(res => res.data)
 
     }
   
@@ -93,11 +79,13 @@
       mutationFn: createUser,
       onSuccess: (data) => {
         toast({
+          position: 'top',
           title: 'تم تسجيل الدخول',
           status: 'success',
           duration: 9000,
           isClosable: true,
         })
+        localStorage.setItem("token",data.data.token)
         login(data.data.token)
         router.push("/")
       },
@@ -148,7 +136,7 @@
                                     message: "يجب تعبئة هذا الحقل"
                                   },
                                   pattern: {
-                                    value: /^09[124]\d{8}$/,
+                                    value: /^(09|2189)[124]\d{7}$/,
                                     message: "الرجاء إدخال رقم صالح في دولة ليبيا"
                                   }
                                 })}></Input>
@@ -172,7 +160,10 @@
                     </FormControl>
                     <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
                     <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.email}</Text>
-
+                    <FormControl >
+                      <FormLabel>صورة المستخدم</FormLabel>
+                      <input width={"50%"} id={"image"} bg={"white"} type='file'border={"none"} {...register("image")} />
+                    </FormControl>
                     <FormControl>
                       <FormLabel  htmlFor='gender' >الجنس</FormLabel>
                       <RadioGroup id='gender' onChange={setValue} value={value} {...register("gender", {
@@ -231,6 +222,29 @@
                       </InputRightElement>
                     </InputGroup>
                     <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor='password'>تأكيد كلمة المرور</FormLabel>
+                    <InputGroup>
+                      <Input id='password_confirmation' type={showPassword ? 'text' : 'password'} {...register("password_confirmation" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            },
+                          })} />
+                      <InputRightElement h={'full'}>
+                        <Button
+                          variant={'ghost'}
+                          onClick={() =>
+                            setShowPassword((showPassword) => !showPassword)
+                          }>
+                          {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                    <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
+                    <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.password}</Text>
+
                   </FormControl>
                 <Stack spacing={10} pt={2}>
                   <Button

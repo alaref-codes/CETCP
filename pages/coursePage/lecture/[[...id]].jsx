@@ -94,7 +94,7 @@ export default function CoursePage() {
             height={"max-content"}
         >
         <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={`${URL.RESOURCE_URL}/${currentLecture.url}`}/>
+            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={`${URL.LECTURES_VIDEOS}/${currentLecture.url}`}/>
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
@@ -156,7 +156,7 @@ export default function CoursePage() {
                 background: "lightgray",
               }}
               >
-                <Link href={`/coursePage/lecture/${course.data.id}/${lecture.id}`}>
+                <Link key={lecture.id} href={`/coursePage/lecture/${course.data.id}/${lecture.id}`}>
                   <ListItem color={"whiteAlpha.900"}
                   _hover={{
                     color: "black",
@@ -170,7 +170,7 @@ export default function CoursePage() {
                 color: "black",
               }}
               >
-                <Link href={`/coursePage/lecture/${course.data.id}/${lecture.id}`} >
+                <Link key={lecture.id} href={`/coursePage/lecture/${course.data.id}/${lecture.id}`} >
                   <ListItem bg={"cornsilk.300"} 
                   _hover={{
                     color: "black",
