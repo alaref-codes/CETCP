@@ -15,7 +15,7 @@ const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 export default function CourseManage() {
   const router = useRouter();
   
-  const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
+  const { data,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher,{refreshInterval:3000 } );
   
   if (isLoading) <Loading></Loading>
   return (
@@ -45,18 +45,14 @@ export default function CourseManage() {
             <TabList>
                 <Tab>معلومات الدورة</Tab>
                 <Tab>محتوى الدورة</Tab>
-                <Tab>معلومات أخرى</Tab>
             </TabList>
 
             <TabPanels>
                 <TabPanel>
-                  {data && <CourseInfoTabForm course={data} ></CourseInfoTabForm>}
+                  {data && <CourseInfoTabForm course={data.data} ></CourseInfoTabForm>}
                 </TabPanel>
                 <TabPanel>
-                  <CourseLectureInfoTab></CourseLectureInfoTab>
-                </TabPanel>
-                <TabPanel>
-                <p>three!</p>
+                  {data && <CourseLectureInfoTab course={data.data} />}
                 </TabPanel>
             </TabPanels>
         </Tabs>

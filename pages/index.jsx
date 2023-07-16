@@ -2,12 +2,10 @@ import Head from 'next/head'
 import Hero from '../components/Hero'
 import CoursesCards from '@/components/CoursesCards'
 import SubHeader from '@/components/SubHeader'
-import { Box } from '@chakra-ui/react'
+import { Box,Spinner } from '@chakra-ui/react'
 import { useEffect, useState,useContext } from 'react'
 import { AuthContext } from '@/context/AuthContext'
 import { useRouter } from 'next/router'
-import Loading from '@/components/Loading'
-
 export default function Home() {
   const router = useRouter();
   const { user, isLoggedIn } = useContext(AuthContext);
@@ -24,10 +22,19 @@ export default function Home() {
       setIsLoading(false);
     }
 
-  }, [user])
+  }, [user,isLoggedIn])
   
   if (isLoading) {
-    return <Loading></Loading>
+    return <Spinner
+    padding={"50px"}
+    margin={"300px 650px"}
+    thickness='15px'
+    speed='1.20s'
+
+    emptyColor='gray.200'
+    color='blue.500'
+    size='xl'
+    />
   }
   return (
     <>
@@ -37,12 +44,21 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
-      {isLoading ? <Loading></Loading> : 
+      {isLoading ? <Spinner
+        padding={"50px"}
+        margin={"300px 650px"}
+        thickness='15px'
+        speed='1.20s'
+
+        emptyColor='gray.200'
+        color='blue.500'
+        size='xl'
+        />: 
       <>
         <Hero></Hero>
         <SubHeader></SubHeader>
           <CoursesCards/></> }
-        <Box height="100px"/>
+        <Box bg={"gray.50"} height="100px"/>
       </main>
     </>
   )

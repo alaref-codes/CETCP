@@ -1,4 +1,4 @@
-import { Flex,Heading,Spacer,Text} from "@chakra-ui/react"
+import { Flex,Heading,Spacer,SimpleGrid} from "@chakra-ui/react"
 import CourseCard from "./CourseCard"
 import useSWR from 'swr'
 import Loading from "./Loading";
@@ -6,6 +6,7 @@ import axios from "axios";
 import NotFound from "@/pages/notFound";
 import * as URL from "@/constants"
 import { useEffect,useState } from "react";
+import CourseLoading from "./CourseLoading";
 
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 const fetcher1 = async (url) => await axios.get(url).then((res) => res.data);
@@ -38,43 +39,21 @@ export default function CoursesCards() {
       }
   }, [])
   
-  if (isLoading) return <Loading></Loading>;
+  if (isLoading) return <CourseLoading></CourseLoading>;
   if (error) {
     return <NotFound/>
   }
 
-  // console.log(programmingCourses);
-  // if (webError) {
-  //   return <NotFound/>
-  // }
   return (
       <>
-      <Heading padding={"30px"}>جميع الدورات</Heading>
-      {isLoading == true ? (<Loading></Loading>) : <Flex wrap="nowrap" overflowX="scroll" minChildWidth="280px" spacingY="3px" >
+      <Heading bg={"gray.50"}  padding={"30px"}>تصفح جميع الدورات</Heading>
+      {isLoading == true ? (<Loading></Loading>) : <SimpleGrid bg={"gray.50"} width={{base:"initial", md:"95%"}} margin={"auto"} minChildWidth='280px' spacing='20px' >
       {data && data.data.data.map(course => (
-        <CourseCard key={course.id} withDescription={true} course={course} myCourses={myCourses} />
+        <CourseCard key={course.id} withDescription={true} course={course} myCourses={myCourses}/>
         ))}
-    </Flex>
+    </SimpleGrid>
     }
     <Spacer h={"100px"} ></Spacer>
-    {/* <Heading padding={"30px"}>دورات في تخصص تصميم مواقع ويب</Heading>
-    {webIssLoading == true ? (<Loading></Loading>) : <Flex wrap="nowrap" overflowX="scroll" minChildWidth="280px" spacingY="3px" >
-          {webDevelopementCourses && webDevelopementCourses.data.data.map(course => (
-            <CourseCard key={course.id} withDescription={true} course={course} myCourses={myCourses} />
-            ))}
-        </Flex>
-    }
-
-
-    <Spacer h={"100px"} ></Spacer>
-    <Heading padding={"30px"}>دورات في تخصص البرمجة</Heading>
-    {programmingIsLoading == true ? (<Loading></Loading>) : <Flex wrap="nowrap" overflowX="scroll" minChildWidth="280px" spacingY="3px" >
-          {programmingCourses && programmingCourses.data.data.map(course => (
-            <CourseCard key={course.id} withDescription={true} course={course} myCourses={myCourses} />
-            ))}
-        </Flex>
-    } */}
-
     </>
 
       

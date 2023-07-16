@@ -31,10 +31,12 @@ import {
 } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import useSWR from 'swr'
   
 import { useForm } from 'react-hook-form';
 
 import { AuthContext } from '@/context/AuthContext';
+import * as URL from '@/constants'
 
 import { useState, useContext,useEffect} from 'react';
   
@@ -44,54 +46,64 @@ async function getUserData(token) {
   .then(res => res.json())
 }
 
+async function logoutCall(token) {
+  return await fetch(`${URL.API_URL}/user-logout`, {
+    headers: {'Authorization': `Bearer ${token}`} })
+  .then(res => res.json())
+}
 
-  export default function CourseNavbar({name}) {
+export default function CourseNavbar({name}) {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
-    const [searchIsOpen, setSearchIsOpen] = useState(false);
-    const { isLoggedIn, token, logout,login } = useContext(AuthContext);
-    const {userData, setUserData } = useState(null);
+    const { isLoggedIn, token,login } = useContext(AuthContext);
+    const [userData, setUserData] = useState(null);
 
-    useEffect(() => {
-      if (!isLoggedIn) {
-        const storedToken = localStorage.getItem("token");
-        if (storedToken != "null") {
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const storedToken = localStorage.getItem("token");
+        if (storedToken && storedToken != "null") {          
           getUserData(storedToken).then((data) => {
+            setUserData(data);
+ 
             login(storedToken)
           });
-        }
-      } else {
-        login(token);
-        getUserData(token).then((data) => {
-          setUserData(data)
-        });
       }
-    }, []);
+    } else {
+      login(token);
+      getUserData(token).then((data) => {
+        setUserData(data);
+      });
+    }
+  }, []);
+  
 
     const onSubmit = (values) => {
       router.push(`/searchPage/${values.search}`)
-
     }
 
-    const searchToggle = () => {
-      setSearchIsOpen(!searchIsOpen)
-    }
+
+  const onLogout = () => {
+    logoutCall(localStorage.getItem("token")).then(() => {
+      localStorage.setItem("token", null)
+      logout();
+      router.push("/signin")
+    })
+  }
+
 
     return (
       <Box>
         <Flex
-          bg={useColorModeValue('gray.700', 'gray.800')}
+          bgGradient={'linear(to-l, gray.700,gray.700,gray.800)'}
           color={useColorModeValue('gray.200', 'white')}
           py={{ base: 2 }}
           px={{ base: 4 }}
-          borderBottom={"0.3px"}
+          borderBottom={"0.7px"}
           borderStyle={'solid'}
           borderColor={useColorModeValue('gray.200', 'gray.900')}
-          align={'center'}
-          boxShadow='2xl '
-          >
+          align={'center'}>
           <Flex
-          
             flex={{ base: 1, md: 'auto' }}
             ml={{ base: -2 }}
             display={{ base: 'flex', md: 'none' }}>
@@ -103,36 +115,47 @@ async function getUserData(token) {
               variant={'ghost'}
               aria-label={'Toggle Navigation'}
             />
-            <IconButton 
-              onClick={searchToggle}
-              variant={'ghost'} 
-              icon={
-                searchIsOpen ? <CloseIcon w={3} h={3} /> : <SearchIcon w={5} h={5} />
-              }
-            />
           </Flex>
-          <Flex flex={{ base: 4 }}  justify={{ base: 'end', md: 'start' }} align={"center"} >
-          <Link 
-              fontSize={'sm'}
-              fontWeight={400}
-              href={'/signin'}>
-              <Button  color={'black'} display={{base:"flex",md:"none"}}>
-              <Text fontSize={"15px"}>تسجيل دخول</Text>
-              </Button>
-            </Link>
-            <Link
+          <Flex flex={{ base: 4 }}  justify={{ base: 'center', md: 'start' }} align={"center"} >
+          <Link
               textAlign={{ base: 'center', md: 'left' }}
               color={useColorModeValue('gray.800', 'white')}
-              href='/'
+              href={"/"}
               >
-              <Text borderLeft={{base: "none", md: "2px solid gray"}}  borderRight={{base: "2px solid gray", md:"none"}} paddingLeft={{base:"0px",md:"15px"}} marginLeft={{md:"20px"}} letterSpacing={"0.3rem"} fontWeight={"bold"} fontSize={"1.4rem"} color={"white"} >CETEP</Text>
+          <Image src={"/cet_logo.webp"} alt="me" width={{ base:"800px", md:"250px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
+              <Flex display={{ base: 'flex', md: 'none' }}>
+              {userData &&  (
+                <HStack>
+                  <Text fontWeight={"bold"} >{userData.data.name}</Text>
+                    <Menu>
+                      <MenuButton> 
+                      <Avatar
+                        size={'md'}
+                        src={
+                          `${URL.USER_IMAGE}/${userData.data.image}`
+                        }
+                      />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem>
+                          <Link  href={`/profile/${userData.data.id}`}>
+                            <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                          </Link> 
+                        </MenuItem>     
+                        <MenuItem>
+                          <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                </HStack>
+              )}
+              </Flex>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <Heading  fontWeight={"900"} fontSize={"1rem"} color={"gray.50"} >{name}</Heading>
+              <DesktopNav/>
             </Flex>
           </Flex>
-
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={'flex-end'}
@@ -140,37 +163,70 @@ async function getUserData(token) {
             display={{ base: 'none', md: 'inline-flex' }}
 
             spacing={6}>
-
-            <Menu>
-              <MenuButton>
-                  <Avatar
-                  size={'md'}
-                  src={
-                    'https://bit.ly/sage-adebayo'
-                  }
-                />
-              </MenuButton>
-              {userData && 
-                <MenuList>
+              {userData ? (
+                <HStack>
+                  <Text fontWeight={"bold"}>{userData.data.name}</Text>
+                  <Menu>
+                <MenuButton> 
+                <Avatar
+                    size={'md'}
+                    src={
+                      `${URL.USER_IMAGE}/${userData.data.image}`
+                    }
+                  />
+                  </MenuButton>
+                  <MenuList>
                   <Link  href={`/profile/${userData.data.id}`}>
                     <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                   </Link>
-                </MenuList>
-              }
-            </Menu>
+                  <MenuItem>
+                    <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
+                  </MenuItem>
+                  </MenuList>
+                  </Menu>
+                </HStack>
+                 )
+                 : (
+                  <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={'flex-end'}
+                    direction={'row'}
+                    display={{ base: 'none', md: 'inline-flex' }}
+
+                    spacing={6}>
+                    <Link href={"/trainerSignup"} >
+                      <Text fontSize={"0.9rem"} fontWeight={"bold"}>التسجيل كمدرب</Text>
+                    </Link>
+                    <Link
+                      fontWeight={600}
+                      href={'/signup'}
+                      _hover={{
+                        bg: 'blue.300',
+                      }}><Button bg={'blue.400'} color={'white'}>
+                      <Text fontSize={"15px"}>تسجيل حساب</Text>
+                      </Button>
+                    </Link>
+                    <Link 
+                      fontSize={'sm'}
+                      fontWeight={400}
+                      href={'/signin'}>
+                      <Button  color={'black'}>
+                      <Text fontSize={"15px"}>تسجيل دخول</Text>
+                      </Button>
+                    </Link>
+                  </Stack>
+                 )}
+            
           </Stack>
         </Flex>
   
         <Collapse in={isOpen} animateOpacity>
           <MobileNav />
         </Collapse>
-        <Collapse in={searchIsOpen} animateOpacity>
-          <SearchNav />
-        </Collapse>
       </Box>
     );
   }
-  
+
   const DesktopNav = () => {
     const linkColor = useColorModeValue('gray.900', 'gray.500');
     const linkHoverColor = useColorModeValue('blue.900', 'blue');
@@ -258,7 +314,6 @@ async function getUserData(token) {
     const router = useRouter()
 
     const onSubmit = (values) => {
-      console.log(values);
       router.push(`/searchPage/${values.search}`)
 
     }
@@ -350,36 +405,15 @@ async function getUserData(token) {
   
   const NAV_ITEMS = [
     {
-      label: 'الفئات',
-      children: [
-
-        {
-          label: 'هندسة البرمجيات',
-          href: '#',
-        },
-        {
-          label: 'اتصالات',
-          href: '#',
-        },
-        {
-          label: 'تحكم آلي',
-          href: '#',
-        },
-      ],
+      label: 'الدورات',
+      children: null,
+      href: "/myCourses"
     },
-    // {
-    //   label: "تسجيل دخول",
-    //   href:"/signin"
-    // },
-    // {
-    //   label: "تسجيل حساب",
-    //   href:"/signup"
-    // },
-    // {
-    //   label: "تسجيل كمدرب",
-    //   href:"/signin"
-    // }
-
+    {
+      label: 'حول',
+      children: null,
+      href: "/about"
+    }
 
   ];
 //   <Flex alignItems={'center'}>

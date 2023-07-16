@@ -57,18 +57,12 @@ export default function Navbar() {
   const [searchIsOpen, setSearchIsOpen] = useState(false);
   const { user, isLoggedIn, token, logout,login } = useContext(AuthContext);
   const [myData, setMyData] = useState(null);
-  const [mainLink,setMainLink] = useState(null);
-
-  console.log("------NAVBAR------");
-  console.log(`is LoggedIn : ${isLoggedIn}`);
-  console.log(`token : ${token}`);
-  console.log(user);
+  const [mainLink,setMainLink] = useState("/");
 
   useEffect(() => {
     if (!isLoggedIn) {
       const storedToken = localStorage.getItem("token");
-      if (storedToken) {
-        if (storedToken && storedToken != "null") {
+        if (storedToken && storedToken != "null") {          
           getUserData(storedToken).then((data) => {
             setMyData(data);
             if (data.data.type == "trainer") {
@@ -76,7 +70,6 @@ export default function Navbar() {
             }   
             login(storedToken)
           });
-        }
       }
     } else {
       login(token);
@@ -104,7 +97,7 @@ export default function Navbar() {
   return (
       <Box>
         <Flex
-          bg={useColorModeValue('#4694D0', 'gray.800')}
+          bgGradient={'linear(to-l, blue.700, linkedin.700)'}
           color={useColorModeValue('gray.200', 'white')}
           py={{ base: 2 }}
           px={{ base: 4 }}
@@ -138,35 +131,38 @@ export default function Navbar() {
               color={useColorModeValue('gray.800', 'white')}
               href={mainLink ? mainLink : "/"}
               >
-          <Image src={"/cet_logo.png"} alt="me" width={{ base:"800px", md:"400px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src={"/cet_logo.webp"} alt="me" width={{ base:"800px", md:"250px"}} height={"50px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
               <Flex display={{ base: 'flex', md: 'none' }}>
               {myData &&  (
-                <Menu>
-                <MenuButton> 
-                <Avatar
-                    size={'md'}
-                    src={
-                      `${URL.USER_IMAGE}/${myData.data.image}`
-                    }
-                  />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem>
-                      <Link  href={`/profile/${myData.data.id}`}>
-                        <MenuItem color={"black"} >الملف الشخصي</MenuItem>
-                      </Link> 
-                    </MenuItem>     
-                    <MenuItem>
-                      <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
-                    </MenuItem>
-                  </MenuList>
-                  </Menu>
+                <HStack>
+                  <Text fontWeight={"bold"} >{myData.data.name}</Text>
+                    <Menu>
+                      <MenuButton> 
+                      <Avatar
+                        size={'md'}
+                        src={
+                          `${URL.USER_IMAGE}/${myData.data.image}`
+                        }
+                      />
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem>
+                          <Link  href={`/profile/${myData.data.id}`}>
+                            <MenuItem color={"black"} >الملف الشخصي</MenuItem>
+                          </Link> 
+                        </MenuItem>     
+                        <MenuItem>
+                          <Button color={"black"} fontSize={'sm'} fontWeight={400}  onClick={onLogout} >تسجيل خروج</Button>
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                </HStack>
               )}
               </Flex>
   
             <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-              <DesktopNav />
+              <DesktopNav/>
             </Flex>
           </Flex>
           <Stack
@@ -177,7 +173,9 @@ export default function Navbar() {
 
             spacing={6}>
               {myData ? (
-                <Menu>
+                <HStack>
+                  <Text fontWeight={"bold"}>{myData.data.name}</Text>
+                  <Menu>
                 <MenuButton> 
                 <Avatar
                     size={'md'}
@@ -187,7 +185,7 @@ export default function Navbar() {
                   />
                   </MenuButton>
                   <MenuList>
-                  <Link  href={`profile/${myData.data.id}`}>
+                  <Link  href={`/profile/${myData.data.id}`}>
                     <MenuItem color={"black"} >الملف الشخصي</MenuItem>
                   </Link>
                   <MenuItem>
@@ -195,7 +193,7 @@ export default function Navbar() {
                   </MenuItem>
                   </MenuList>
                   </Menu>
-
+                </HStack>
                  )
                  : (
                   <Stack
@@ -247,14 +245,13 @@ export default function Navbar() {
     return useSWR(`${URL.API_URL}/categories`, fetcher);
   }
 
-  const DesktopNav = () => {
+  const DesktopNav = ({}) => {
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
-    const [userData, setUserData] = useState(null)
-
-    
     const { data,isLoading } = getCategories()
+
     if (isLoading) return <Text>Loading...</Text>;
     NAV_ITEMS[0].children = data.data;
+
     return (
       <Stack direction={'row'} spacing={4}>
         {NAV_ITEMS.map((navItem) => (
@@ -312,7 +309,7 @@ export default function Navbar() {
               transition={'all .3s ease'}
               _groupHover={{ color: 'pink.400' }}
               fontWeight={500}>
-              {name}
+              {name} 
             </Text>
           </Box>
           <Flex
@@ -358,6 +355,8 @@ export default function Navbar() {
 
   const MobileNav = () => {
     const { data,isLoading } = getCategories()
+    const { isLoggedIn } = useContext(AuthContext);
+
 
     if (isLoading) return <Text>Loading...</Text>;
 
@@ -369,6 +368,7 @@ export default function Navbar() {
         bg={useColorModeValue('white', 'gray.800')}
         p={4}
         display={{ md: 'none' }}>
+        {!isLoggedIn && <Link href={"/signin"}><Text fontWeight={"bold"} >تسجيل الدخول</Text></Link>}
         {NAV_ITEMS.map((navItem) => (
           <MobileNavItem key={navItem.label} {...navItem} />
         ))}
@@ -377,12 +377,10 @@ export default function Navbar() {
   };
   
   const MobileNavItem = ({ label, children, href }) => {
-    const { isLoggedIn } = useContext(AuthContext);
     const { isOpen, onToggle } = useDisclosure();
   
     return (
       <Stack spacing={4} >
-        {!isLoggedIn && <Link href={"/signin"}><Text fontWeight={"bold"} >تسجيل الدخول</Text></Link>}
         <Flex
           onClick={children && onToggle}
           py={2}
@@ -438,7 +436,7 @@ export default function Navbar() {
     {
       label: 'الفئات',
       children: [],
-      href: null
+      href: "#"
     },
     {
       label: 'الدورات',

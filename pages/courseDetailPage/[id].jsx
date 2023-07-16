@@ -1,6 +1,6 @@
 import Loading from "@/components/Loading"
 import { useRouter } from 'next/router';
-import {useRef,useEffect, useState} from 'react';
+import {useRef,useEffect,useContext, useState} from 'react';
 import useSWR from 'swr';
 import axios from 'axios';
 import NotFound from '../notFound';
@@ -12,6 +12,7 @@ import {
     Text,
     Image,
     Flex,
+    Spinner,
     VStack,
     Button,
     Heading,
@@ -19,11 +20,12 @@ import {
     SimpleGrid,
     StackDivider,
     useColorModeValue,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Link 
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Link, HStack 
   } from '@chakra-ui/react';
   import * as URL from "@/constants"
   import { useToast } from '@chakra-ui/react';
   import { useMutation } from '@tanstack/react-query';
+  import { AuthContext } from '@/context/AuthContext'
 
   async function getUserData(token) {
     return await fetch(`${URL.API_URL}/user-show`, {
@@ -38,9 +40,26 @@ import {
     const { data, error,isLoading } = useSWR(`${URL.API_URL}/courses/${router.query.id}`, fetcher, {refreshInterval:1000});
     const initialRef = useRef(null)
     const finalRef = useRef(null)  
+    const initialRefTwo = useRef(null)
+    const finalRefTwo = useRef(null)  
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpenTwo, onOpenTwo, onCloseTwo } = useDisclosure()
     const [ userData, setUserData ] = useState(null);
-
+    const { user, isLoggedIn } = useContext(AuthContext);
+    const [isLoadingOne,setIsLoadingOne] = useState(true);
+  
+    useEffect(() => {
+      if (isLoggedIn && typeof(user) !== "undefined") {
+        if (user.type === "trainer") {
+          router.push("/instructor/courses");
+        } else {
+          setIsLoadingOne(false);
+        }
+      } else { 
+        setIsLoadingOne(false);
+      }
+  
+    }, [user,isLoggedIn])
 
     useEffect(() => {
       if (localStorage.getItem("token") && localStorage.getItem("token") != "null"){
@@ -87,13 +106,36 @@ import {
       mutation.mutate()
     }
 
+        
+    if (isLoadingOne) {
+      return <Spinner
+      padding={"50px"}
+      margin={"300px 650px"}
+      thickness='15px'
+      speed='1.20s'
+  
+      emptyColor='gray.200'
+      color='blue.500'
+      size='xl'
+      />
+    }
+  
     if (isLoading) return <Loading></Loading>;
     if (error) {
       return <NotFound/>
     }
     return (
       <Container  maxW={'7xl'}>
-        <SimpleGrid
+        {isLoadingOne ?  <Spinner
+        padding={"50px"}
+        margin={"300px 650px"}
+        thickness='15px'
+        speed='1.20s'
+
+        emptyColor='gray.200'
+        color='blue.500'
+        size='xl'
+        /> : <SimpleGrid
           columns={{ base: 1, lg: 2 }}
           spacing={{ base: 8, md: 10 }}
           py={{ base: 10, md: 14 }}>
@@ -101,7 +143,7 @@ import {
             <Image
               rounded={'md'}
               alt={'course image'}
-              src={data.data.image ? `${URL.STORAGE_URL}/${data.data.image}` : 'https://bit.ly/sage-adebayo'}
+              src={data.data.image ? `${URL.STORAGE_URL}/${data.data.image}` : 'https://placehold.co/600x400'}
               objectFit={'cover'}
               align={'center'}
               w={'100%'}
@@ -144,12 +186,7 @@ import {
                 </Text>
               </VStack>
               <Box>
-                <Text
-                  textAlign={"left"}
-                  textTransform={'uppercase'}
-                  mb={'4'}>
-                   {data.data.description}
-                </Text>
+                <div dangerouslySetInnerHTML={{ __html: data.data.description }}></div>
               </Box>
               
             </Stack>
@@ -175,21 +212,30 @@ import {
               finalFocusRef={finalRef}
               isOpen={isOpen}
               onClose={onClose}
-              size={{base:"md", md:"2xl"}}
+              motionPreset='slideInBottom'
+              size={{base:"xl", md:"full"}}
             >
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader mr="40px" >إتمام عملية الشراء</ModalHeader>
                 <ModalCloseButton />
-                <ModalBody pb={6}>
-                  <Heading>الدورة: {data.data.name}</Heading>
-                  <chakra.p>المدرب: {data.data.trainer_name}</chakra.p>
-                  <Text as="h4">تكلفة الدورة: {data.data.price}</Text>
-                  {userData ? 
-                  (<Text as="h4">رصيدك الحالي: {userData.account.balance}</Text>) : 
-                  (<Link href="/signin">تسجيل الدخول</Link>)}
-                  <Text color={"darkred"} fontSize={"20px"} >{mutation.isError && mutation.error.response.data?.message}</Text>
-
+                <ModalBody  width={{base:"100%",md:"50%"}} margin={"100px auto"} pb={6}>
+                  <Stack direction={{base:"column", md:"row"}} >
+                  <Image src={`${URL.STORAGE_URL}/${data.data.image}`} width={{basE:"full",md:"300px"}} height={"300px"} ></Image>
+                  <VStack textAlign={"start"} >
+                    <Heading padding={"20px"} >اسم الدورة: {data.data.name}</Heading>
+                    <Heading padding={"20px"} fontWeight={"light"} >المدرب: {data.data.trainer_name}</Heading>
+                    <Heading padding={"20px"} fontWeight={"light"}  >تكلفة الدورة: {data.data.price}</Heading>
+                    {userData ? 
+                    ( <>
+                      <Heading padding={"20px"} fontWeight={"light"} >رصيدك الحالي: {userData.account.balance}</Heading>
+                      <Text>رصيدك المتبقي {userData.account.balance - data.data.price}</Text>
+                    </>
+                    )  : 
+                    (<Link href="/signin">تسجيل الدخول</Link>)}
+                    <Text color={"darkred"} fontSize={"20px"} >{mutation.isError && mutation.error.response.data?.message}</Text>
+                  </VStack>
+                  </Stack>
                 </ModalBody>
 
                 <ModalFooter>
@@ -200,12 +246,31 @@ import {
                 </ModalFooter>
               </ModalContent>
             </Modal>
-  
-            <Stack direction="row" alignItems="center" justifyContent={'center'}>
-              <Text>2-3 business days delivery</Text>
-            </Stack>
+            <Modal
+              initialFocusRef={initialRefTwo}
+              finalFocusRef={finalRefTwo}
+              isOpen={isOpenTwo}
+              onClose={onCloseTwo}
+              size={{base:"full", md:"full"}}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader mr="40px" >إتمام عملية الشراء</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                  <Heading>سيتم خصم {data.data.price} من حسابك</Heading>
+                </ModalBody>
+
+                <ModalFooter>
+                  <Button colorScheme='blue' ml={"10px"}>
+                    تأكيد
+                  </Button>
+                  <Button onClick={onCloseTwo}>رجوع</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Stack>
-        </SimpleGrid>
+        </SimpleGrid> }
       </Container>
     );
   }

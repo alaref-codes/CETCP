@@ -1,4 +1,4 @@
-import CourseInfoTabForm from '@/components/CourseInfoTabForm'
+import NewCourseInfoTabForm from '@/components/NewCourseInfoTabForm'
 import CourseLectureInfoTab from '@/components/CourseLectureInfoTab'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { Tabs,Flex, TabList,Text, TabPanels,Box, Tab, TabPanel, Heading } from '@chakra-ui/react'
@@ -34,18 +34,14 @@ export default function CourseManage() {
             <TabList>
                 <Tab>معلومات الدورة</Tab>
                 <Tab>محتوى الدورة</Tab>
-                <Tab>معلومات أخرى</Tab>
             </TabList>
 
             <TabPanels>
                 <TabPanel>
-                  <CourseInfoTabForm></CourseInfoTabForm>
+                  <NewCourseInfoTabForm></NewCourseInfoTabForm>
                 </TabPanel>
                 <TabPanel>
                   <CourseLectureInfoTab></CourseLectureInfoTab>  
-                </TabPanel>
-                <TabPanel>
-                <p>three!</p>
                 </TabPanel>
             </TabPanels>
         </Tabs>

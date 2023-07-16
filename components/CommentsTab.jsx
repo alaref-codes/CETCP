@@ -1,16 +1,16 @@
-import { AddIcon, EditIcon } from "@chakra-ui/icons";
-import { Flex, Avatar,Image,Box,Text, Heading, Spacer } from "@chakra-ui/react";
+import { Box,Text, Heading } from "@chakra-ui/react";
 import Comment from "./Comment";
 import useSWR from 'swr'
 import axios from "axios";
 import * as URL from "@/constants"
-
-
+import CommentText from "./CommentText";
 const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
 export default function CommentsTab({lectureId}) {
   const { data, error,isLoading } = useSWR(`${URL.API_URL}/comments/${lectureId}`, fetcher, {refreshInterval:1000});
   if (isLoading) return <Text>Loading....</Text>;
+
+
 
   return (
 
@@ -26,24 +26,12 @@ export default function CommentsTab({lectureId}) {
                     borderRadius: '17px',
                   },}} >  
     {data && data.data.map(comment => (
-          <Box borderBottom={"1px solid darkgray"} bgColor={"gray.100"} borderRadius={"2px"} padding={"10px"} width={"100%"} >
-          <Flex direction={"row"} alignItems={"center"}  paddingX={"20px"} paddingY={"20px"}>
-            {console.log("dsfsd")}
-              <Avatar name={comment.user.name} src={`${URL.USER_IMAGE}/${comment.user.image}`}/>
-              <Text marginRight={"10px"} fontWeight={"bold"} >{comment.user.name}</Text>
-              <Spacer></Spacer>
-              <Text marginLeft={"10px"} color={"gray.600"}>{comment.created_at  }</Text>
-              <EditIcon marginBottom={"5px"} ></EditIcon>
-            </Flex>
-          <Box paddingRight={"60px"}  >
-            <Text>{comment.comment}</Text>
-          </Box>
-          </Box>
+        <CommentText comment={comment} ></CommentText>
     ))}
       </Box>
       
       <Heading fontSize={"1.6rem"}>قم بكتابة استفسارك</Heading>
-        <Comment lectureId={lectureId} ></Comment>
+        <Comment lectureId={lectureId}></Comment>
       </Box>
 
   )

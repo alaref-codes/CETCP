@@ -24,27 +24,24 @@ export default function CourseCard(props) {
 
 
   return (
-    <Link href={paid ? `/coursePage/lecture/${props.course.id}/${props.course.first_lecture_id}` : `/courseDetailPage/${props.course.id}`} >
-            <Box w={{base:"300px", md:"full"}}>
+    <Link bg={"gray.50"} href={paid ? `/coursePage/lecture/${props.course.id}/${props.course.first_lecture_id}` : `/courseDetailPage/${props.course.id}`} >
+            <Box bg={"gray.50"} w={{base:"full", md:"full"}}>
             <Flex
-                _dark={{
-                bg: "#3e3e3e",
-                }}
-                p={5}
-                w="100%"
-                alignItems="center"
-                justifyContent="center"
-                >
-                <Box
-                h="-moz-min-content"
-                w="300px"
-                mx="10px"
-                _dark={{
-                bg: "gray.800",
-                }}
-                shadow="lg"
-                rounded="sm"
-                overflow="hidden"
+                  p={6}
+                  w="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                  >
+                  <Box
+                  h="-moz-min-content"
+                  w="300px"
+                  mx="10px"
+                  _dark={{
+                  bg: "gray.800",
+                  }}
+                  boxShadow={"xl"}
+                  rounded="sm"
+                  overflow="hidden"
                 >
                 <Image
                 w="full"
@@ -52,6 +49,7 @@ export default function CourseCard(props) {
                 objectFit="fill"
                 objectPosition="center"
                 loading='lazy'
+                bg={"gray.50"}
                 src={`${URL.STORAGE_URL}/${props.course.image}`}
                 alt="avatar"
                 />
@@ -78,6 +76,7 @@ export default function CourseCard(props) {
             {props.course.header}
         </chakra.p> }
         <Divider></Divider>
+
         <Button marginBottom={"10%"} colorScheme={paid ? "blue" : "orange"} >{paid ? (<Text>استمرار في التعلم</Text>) : (<Text>عرض التفاصيل</Text>)}</Button>
         </Box>
         </Box>

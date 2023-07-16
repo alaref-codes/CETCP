@@ -11,16 +11,18 @@ import {
     InputRightElement,
     Stack,
     Button,
-    Heading,
-    Text,
+    Center,
+    Avatar,
+    AvatarBadge,
+    Spinner,
     RadioGroup,
-    Radio,
+    Text,
     useColorModeValue,
     Link,
     VStack,
   } from '@chakra-ui/react';
   import { useContext, useState } from 'react';
-  import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+  import { ViewIcon, ViewOffIcon,IconButton,SmallCloseIcon } from '@chakra-ui/icons';
   import { useForm } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
   import { useMutation } from '@tanstack/react-query';
@@ -30,12 +32,24 @@ import {
   import * as URL from '@/constants'
   export default function TrainerSignupPage() {
     const [topping, setTopping] = useState("1")
-
+    const [picture, setPicture] = useState(null);
+    const [imgData, setImgData] = useState(null);
     const [value, setValue] = useState('1')
     const [showPassword, setShowPassword] = useState(false);
     const { login } = useContext(AuthContext);
     const router = useRouter();
     const toast = useToast()
+
+    const onChangePicture = e => {
+      if (e.target.files[0]) {
+        setPicture(e.target.files[0]);
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          setImgData(reader.result);
+        });
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    };
 
     const url = `${URL.API_URL}/register`
 
@@ -44,7 +58,8 @@ import {
         username: "",
         email: "",
         password: "",
-        number: "",        
+        password_confirmation: "",
+        number: "",          
       }
     });
 
@@ -54,13 +69,16 @@ import {
 
     const createUser = async ({variables}) =>{
       let formData = new FormData();    
-      formData.append('name', variables.username); 
+      formData.append('name', variables.username);   //append the values with key, value pair
       formData.append('email', variables.email);
       formData.append('password', variables.password);
-      formData.append('password_confirmation', variables.password);
-      formData.append('image', variables.image[0]);
+      formData.append('password_confirmation', variables.password_confirmation);
+      if (variables.image[0]) {
+        formData.append('image', variables.image[0]);
+      }
       formData.append('gender', variables.gender);
       formData.append('phone', variables.number);
+      formData.append('birthday', variables.birthday);
       formData.append('type', 'trainer');
 
       return axios.post(url,formData,{headers:{ "Content-Type": 'multipart/form-data'}}).then(res => res.data)
@@ -92,6 +110,20 @@ import {
       mutation.mutate({variables:data})
     }
 
+
+    if (mutation.isLoading) {
+      return <Spinner
+      padding={"50px"}
+      margin={"300px 650px"}
+      thickness='15px'
+      speed='1.20s'
+  
+      emptyColor='gray.200'
+      color='blue.500'
+      size='xl'
+      />
+    }
+
     return (
       <Stack minH={'100vh'}  direction={{ base: 'column', md: 'row' }}>
         <Flex
@@ -110,6 +142,27 @@ import {
               p={8}>
               <Stack spacing={4}>
                   <form  onSubmit={handleSubmit(onSubmit)}>
+                  <FormControl onChange={onChangePicture} id="image">
+                    <FormLabel>User Icon</FormLabel>
+                      <Stack direction={['column', 'row']} spacing={6}>
+                        <Center>
+                          <Avatar size="md" src={imgData}>
+                            <AvatarBadge
+                              as={IconButton}
+                              size="sm"
+                              rounded="full"
+                              top="-10px"
+                              colorScheme="red"
+                              aria-label="remove Image"
+                              icon={<SmallCloseIcon />}
+                            />
+                          </Avatar>
+                        </Center>
+                        <Center w="full">
+                          <input width={"50%"} id={"image"} bg={"white"} type='file' placeholder='sdfsd' border={"none"} {...register("image")} />
+                        </Center>
+                      </Stack>
+                    </FormControl>
                     <HStack>
                       <Box>
                         <FormControl>
@@ -137,7 +190,7 @@ import {
                                   }
                                 })}></Input>
                                 <Text color={"red"} fontSize={"12px"} >{errors.number?.message}</Text>
-                                <Text color={"red"} fontSize={"12px"} >{mutation.isError &&  mutation.error.response.data.message?.phone}</Text>
+                                <Text color={"red"} fontSize={"12px"} >{mutation.isError ? mutation.error.response.data.message?.phone && "هذا الرقم مستخدم سابقا" : "" }</Text>
                           </FormControl>
                       </Box>
                     </HStack>
@@ -155,11 +208,7 @@ import {
                                 })} />
                     </FormControl>
                     <Text color={"red"}  fontSize={"12px"} >{errors.email?.message}</Text>
-                    <Text color={"red"} fontSize={"12px"} >{mutation.isError &&  mutation.error.response.data.message?.email}</Text>
-                    <FormControl >
-                      <FormLabel>صورة المستخدم</FormLabel>
-                      <input width={"50%"} id={"image"} bg={"white"} type='file'border={"none"} {...register("image")} />
-                    </FormControl>
+                    <Text color={"red"} fontSize={"12px"} >{mutation.isError ? mutation.error.response.data.message?.email && " البريد الإلكتروني مستخدم سابقا" : "" }</Text>
                     <FormControl>
                       <FormLabel  htmlFor='gender' >الجنس</FormLabel>
                       <RadioGroup id='gender' onChange={setValue} value={value} {...register("gender", {
@@ -219,9 +268,41 @@ import {
                     </InputGroup>
                     <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
                   </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor='password'>تأكيد كلمة المرور</FormLabel>
+                    <InputGroup>
+                      <Input id='password_confirmation' type={showPassword ? 'text' : 'password'} {...register("password_confirmation" , {
+                            required: {
+                              value: true,
+                              message: "يجب تعبئة هذا الحقل"
+                            },
+                          })} />
+                      <InputRightElement h={'full'}>
+                        <Button
+                          variant={'ghost'}
+                          onClick={() =>
+                            setShowPassword((showPassword) => !showPassword)
+                          }>
+                          {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                    <Text color={"red"}  fontSize={"12px"} >{errors.password?.message}</Text>
+                    <Text color={"red"} fontSize={"12px"} >{mutation.isError && mutation.error.response.data.message?.password}</Text>
+                  </FormControl>
+                  <FormControl>
+                  <FormLabel>تاريخ الميلاد</FormLabel>
+                  <Input
+
+                    id={"birthday"}
+                    _placeholder={{ color: 'gray.500' }}
+                    type="date"
+                    {...register("birthday" )}
+                  />
+                </FormControl>
                 <Stack spacing={10} pt={2}>
                   <Button
-                    isDisabled={mutation.isLoading}
+                    // isDisabled={mutation.isLoading}
                     type='submit'
                     loadingText="Submitting"
                     size="lg"
@@ -233,8 +314,8 @@ import {
                     Sign up
                   </Button>
                 </Stack>
-              </form>
-                <Stack pt={6}>
+              </form>                
+              <Stack pt={6}>
                   <Text align={'center'}>
                     هل لديك حساب بالفعل <Link href='./signin' color={'blue.400'}>تسجيل دخول</Link>
                   </Text>

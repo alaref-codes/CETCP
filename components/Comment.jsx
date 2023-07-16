@@ -5,12 +5,13 @@ import * as URL from '@/constants'
 import axios from "axios";
 import { useRouter } from 'next/router';
 
-export default function Comment({lectureId}) {
+export default function Comment({lectureId,values}) {
     const router = useRouter();
     const form = useForm({
         defaultValues: {
             comment: "",    
-          }
+          },
+          values
     });
     const { register,handleSubmit,reset } = form;
     const toast = useToast()
@@ -20,7 +21,6 @@ export default function Comment({lectureId}) {
             course_lecture_id: lectureId,
             comment: variables.comment
         },{headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }}).then(res => res.data)
-  
       }
 
 

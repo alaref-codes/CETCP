@@ -103,6 +103,7 @@ export default function InstructorNavbar() {
           color={useColorModeValue('gray.200', 'white')}
           py={{ base: 2 }}
           px={{ base: 4 }}
+          bgGradient={'linear(to-l, blue.700, linkedin.700)'}
           borderBottom={"0.7px"}
           borderStyle={'solid'}
           borderColor={useColorModeValue('gray.200', 'gray.900')}
@@ -133,9 +134,8 @@ export default function InstructorNavbar() {
               color={useColorModeValue('gray.800', 'white')}
               href={mainLink ? mainLink : "/"}
               >
-          <Image src={"/cet_logo3.png"} alt="me" width={"100px"} height={"80px"}  borderRadius={"10px"} marginLeft={"20px"} ></Image>
+          <Image src={"/cet_logo.webp"} alt="me" width={{ base:"800px", md:"250px"}} height={"50px"} borderRadius={"10px"} marginLeft={"20px"} ></Image>
             </Link>
-          <Text borderLeft={{base: "none", md: "2px solid gray"}}  borderRight={{base: "2px solid gray", md:"none"}} paddingLeft={{base:"0px",md:"15px"}} marginLeft={{md:"20px"}} letterSpacing={"0.3rem"} fontWeight={"bold"} fontSize={"1.4rem"} color={"black"} >CETEP</Text>
 
               <Flex display={{ base: 'flex', md: 'none' }}>
               {myData &&  (

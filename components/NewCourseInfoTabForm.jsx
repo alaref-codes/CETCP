@@ -24,16 +24,15 @@ import {
   } from '@chakra-ui/react';
   import { Parser } from 'html-to-react'
   import useSWR from 'swr'
-  import { useForm,  useFormContext,
-    Controller,
-    useController } from 'react-hook-form';
+  import { useForm, Controller } from 'react-hook-form';
   import { useToast } from '@chakra-ui/react';
-  import { useRef,useState,useEffect } from 'react';
+  import { useRef,useState } from 'react';
   import { Editor } from '@tinymce/tinymce-react';
   import axios from 'axios';
   import { useMutation } from '@tanstack/react-query';
   import * as URL from '@/constants'
   import FormData from 'form-data'
+  import { useRouter } from 'next/router';
   const fetcher = async (url) => await axios.get(url).then((res) => res.data);
 
   const getCategories = () => {
@@ -44,6 +43,7 @@ import {
     const [picture, setPicture] = useState(null);
     const [imgData, setImgData] = useState(null);
     const editorRef = useRef(null);
+    const router = useRouter();
     let form = useForm();
     const onChangePicture = e => {
       if (e.target.files[0]) {
@@ -55,17 +55,17 @@ import {
         reader.readAsDataURL(e.target.files[0]);
       }
     };
-    let formData = new FormData();
+    let formData = new FormData();    //formdata object
     if (course) {
-      formData.append("image", imgData)
+      formData.append("image", `${URL.STORAGE_URL}/${course.data.image}`)
       form = useForm({
         defaultValues: {
-          name: course.name,
-          header: course.header,
-          description: Parser().parse(course.description),
-          category: course.category_id,
-          length: course.length,
-          price: course.price
+          name: course.data.name,
+          header: course.data.header,
+          description: Parser().parse(course.data.description),
+          category: course.data.category_id,
+          length: course.data.length,
+          price: course.data.price
         }
       });
     } else {
@@ -80,50 +80,25 @@ import {
         }
       });
     }
-
-    useEffect(() => {
-    if (course){ 
-      setImgData(`${URL.STORAGE_URL}/${course.image}`);
-    }
-  
-    }, [])
-    
     const toast = useToast()
-    const { register,handleSubmit,control } = form;
+    const { register,handleSubmit, formState,control } = form;
+
+    const { errors,isDirty } = formState
 
 
-    function insert_contents(inst){
-      inst.setContent(course.description);  
-    }
-  
     const createCourse = async ({variables}) =>{
 
-      formData.append('_method', "PUT");
-
-      if (course.name !== variables.name){ 
-        formData.append('name', variables.name);   //append the values with key, value pair
-      }
-
-      if (course.header !== variables.header) {
-        formData.append('header', variables.header);
-      }
-      if (course.description !== variables.description) {
-        formData.append('description', variables.description); 
-      }
-      if (course.price !== variables.price) {
-        formData.append('price', variables.price);
-      }
-      if (course.category_id !== variables.category) {
-        formData.append('category_id', variables.category);
-      }
-      if (course.length !== variables.length) {
-        formData.append('length', variables.length);
-      }
+      formData.append('name', variables.name);   //append the values with key, value pair
+      formData.append('header', variables.header);
+      formData.append('description', variables.description);
       formData.append('image', variables.image[0]);
-
+      formData.append('category_id', variables.category);
+      formData.append('price', variables.price);
+      formData.append('length', variables.length);
       
-      return axios.post(`${URL.API_URL}/courses/${course.id}`,formData,{headers:
-         { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": 'multipart/form-data'}}).then(res => res.data)
+      return axios.post(`${URL.API_URL}/courses`,formData,{headers:
+         { Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": 'multipart/form-data'}}).then(res => res.data)
 
     }
 
@@ -134,11 +109,12 @@ import {
       onSuccess: () => {
         toast({
           position: 'top',
-          title: 'تم تعديل معلومات الدورة بنجاح',
+          title: 'تم إضافة دورة جديدة بنجاح',
           status: 'success',
           duration: 9000,
           isClosable: true,
         })
+        router.push("/instructor/courses");
       },
 
       })
@@ -194,7 +170,6 @@ import {
                   <FormControl >
                     <Editor apiKey='44gkr7bzvz2bcnl44931u48mvwpph88wtdbk1ycqyg2tqw4k'
                       init={{
-                        init_instance_callback: insert_contents,
                         height: 500,
                         menubar: false,
                         plugins: [
@@ -215,11 +190,11 @@ import {
                 )}
               />
               <HStack margin={"30px"} padding={"30px"} border={"2px solid black"}>
-                <FormControl onChange={onChangePicture} >
+                <FormControl onChange={onChangePicture}>
                   <FormLabel>خلفية الدورة</FormLabel>
-                  <input width={"50%"} id={"image"} bg={"white"} type='file'  border={"none"} {...register("image")} />
+                  <input width={"50%"} id={"image"} bg={"white"} type='file' border={"none"} {...register("image")} />
                 </FormControl>
-                <Image margin={"10px"} padding={"10px"}  src={imgData} objectFit={"fill"} h="150px" w="150"></Image>
+                <Image margin={"10px"} padding={"10px"} src={imgData} objectFit={"fill"} h="150px" w="150"></Image>
               </HStack>
               <FormControl as={GridItem} colSpan={[6, 3]}>
                 <FormLabel
@@ -235,7 +210,6 @@ import {
                 <Select
                   id="category"
                   name="category"
-                  value={course.category_id}
                   autoComplete="category"
                   placeholder="Select option"
                   focusBorderColor="brand.400"

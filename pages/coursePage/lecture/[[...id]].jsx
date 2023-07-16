@@ -1,19 +1,17 @@
 import { useRouter } from 'next/router';
 import {Grid, GridItem,TabList,Tabs,Tab,TabPanels,OrderedList,ListItem,TabPanel, Flex, Box, Divider, Heading, UnorderedList} from "@chakra-ui/react"
 import Loading from "@/components/Loading"
-import useSWR from 'swr';
 import Footer from '@/components/Footer';
 import CourseNavbar from '@/components/CourseNavbar'
 import ReactPlayer from 'react-player'
 import { ChakraProvider } from '@chakra-ui/react'
-
+import ComplaintTab from '@/components/ComplaintTab';
 import { useState,useEffect, useContext } from 'react';
 import InfoTab from '@/components/InfoTab';
 import AttachementTab from '@/components/AttachementTab';
 import CommentsTab from '@/components/CommentsTab';
 import CourseContentMobile from '@/components/CourseContentMobile';
 import axios from 'axios';
-import NotFound from '@/pages/notFound';
 import { AuthContext } from '@/context/AuthContext';
 import * as URL from "@/constants"
 import Link from 'next/link';
@@ -51,8 +49,6 @@ export default function CoursePage() {
         setCourse(courseData);
         setLectures(courseData.data.lectures);
         setCurrentLectureId(router.query.id[1])
-        // const isCurrentLecture = (element) => element.id === router.query.id[1];
-        console.log(courseData.data.lectures[0]);
         setCurrentLecture(courseData.data.lectures[0])
       })     
     } 
@@ -65,19 +61,6 @@ export default function CoursePage() {
         }
   },[router])
       
-  // const onLectureChange = () => {
-  //       if (lectures){
-  //         setCurrentLectureId(router.query.id)
-  //         const isCurrentLecture = (element) => element.id === router.query.id[1];
-  //     setCurrentLecture[lectures[lectures.findIndex(isCurrentLecture)]]
-  //   }
-  // }
-  console.log(currentLecture);
-  // useEffect(() => {
-    //   if (data) {
-      //     setCurrentLecture(data.data[router.query.id[1]-1])
-      //   }
-      // },[router])
   if (!currentLecture) return <Loading/>;
   return (
     <>
@@ -98,12 +81,16 @@ export default function CoursePage() {
         </Box>
         <Tabs isFitted colorScheme='blue.500' variant='line'>
         <TabList mb='1em' >
+            <Tab display={{base:"grid",lg:"none"}} >محتوى الدورة</Tab>
             <Tab>مقدمة</Tab>
             <Tab>مرفقات</Tab>
             <Tab>تعليقات</Tab>
-            <Tab display={{base:"grid",lg:"none"}} >محتوى الدورة</Tab>
+            <Tab>شكاوى</Tab>
         </TabList>
         <TabPanels  pr='1.5em' minH={"660px"} >
+            <TabPanel display={{base:"initial",md:"none"}} >
+                <CourseContentMobile lectures={lectures} course={course} currentLectureId={currentLectureId} ></CourseContentMobile>
+            </TabPanel>
             <TabPanel defaultIndex={1}>
               <InfoTab currentLecture={currentLecture} duration={lectureDuration} instructor={course.data.trainer_name} />
             </TabPanel>
@@ -113,8 +100,8 @@ export default function CoursePage() {
             <TabPanel>
                 <CommentsTab lectureId={currentLecture.id} ></CommentsTab>
             </TabPanel>
-            <TabPanel display={{base:"initial",md:"none"}} >
-                <CourseContentMobile></CourseContentMobile>
+            <TabPanel>
+                <ComplaintTab lectureId={currentLecture.id} ></ComplaintTab>
             </TabPanel>
         </TabPanels>
         </Tabs>

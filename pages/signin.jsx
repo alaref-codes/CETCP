@@ -111,8 +111,9 @@ async function getUserData(token) {
         justify={'center'}
         bg={useColorModeValue('gray.50', 'gray.800')}>
         <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Image src="/cet_logo.png"  alt="me" bg={"lightsteelblue"} width={"500px"}  borderRadius={"10px"} ></Image>
-
+        <Link href={"/"} >  
+          <Image src="/cet_logo.png"  alt="me" bg={"lightsteelblue"} width={"500px"}  borderRadius={"10px"} ></Image>
+        </Link>
           <Stack align={'center'}>
             <Heading fontSize={'4xl'}>قم بتسجيل الدخول إلى حسابك</Heading>
             <Text color={"red"} fontSize={"20px"} >{mutation.isError && mutation.error.response.data.message}</Text>

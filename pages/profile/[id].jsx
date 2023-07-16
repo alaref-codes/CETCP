@@ -59,6 +59,8 @@ import ProfileForm from '@/components/ProfileForm';
         defaultValues: {
           username: data.data.name,
           email: data.data.email,
+          phone: data.data.phone,
+          birthday: data.data.birthday
         }
       });
     } else {
@@ -66,10 +68,11 @@ import ProfileForm from '@/components/ProfileForm';
         defaultValues: {
           username: "",
           email: "",
+          phone: "",
+          birthday: ""
         }
       });
     }
-    const { register,handleSubmit,formState } = form;
 
     const mutation = useMutation({
       mutationFn: () => {console.log("hello world");},

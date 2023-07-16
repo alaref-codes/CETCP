@@ -41,20 +41,24 @@ export default function myCourses() {
   return (
     <>
     <Box borderBottom="1px solid gray" position={"relative"} bg='blue.50' h='250px'>
-      <Heading as={"h1"} fontSize={"6xl"} position={"absolute"} bottom={{base:"100px",md:"1px"}} right={"150px"} >الدورات الخاصة بك</Heading>
+      <Heading as={"h1"} fontSize={{base:"2xl",md:"6xl"}} position={"absolute"} bottom={{base:"80px",md:"35px"}} right={"150px"}  >الدورات الخاصة بك</Heading>
     </Box>
-    {signinModal ? <Container padding={"140px"} ><Link href={"/signin"}><Card border={"1px solid black"} >
+    {signinModal ? 
+    <Container padding={"140px"} >
+      <Text textAlign={"center"} marginBottom={"10px"} >عفوا أنت الأن غير مسجل</Text>
+      <Link href={"/signin"}>
+      <Card border={"1px solid black"} >
         <CardBody>
-          <Text textAlign={"center"}  >سجل الدخول </Text>
+          <Text textAlign={"center"}  >تسجيل الدخول </Text>
         </CardBody>
       </Card></Link></Container> : <>
-      {data && <>{data.data.data.length > 0  ? <SimpleGrid width={"80%"} marginRight={"0px"} minChildWidth={"250px"} columns={"3"}  >
+      {data && <>{data.data.data.length > 0  ? <SimpleGrid bg={"gray.50"} padding={"10px"} width={{base:"initial", md:"85%"}} margin={"auto"} minChildWidth='280px' spacing='20px'  >
       {data.data.data.map(course => (
       <CourseCard  key={course.id} withDescription={false}  course={course} payed={true} myCourses={[]} />
       ))}
       </SimpleGrid> : <Card border={"1px solid black"} >
         <CardBody>
-          <Text textAlign={"center"}  >لا يوجد لديك دورات بعد</Text>
+        <Text textAlign={"center"}  >لا يوجد لديك دورات بعد</Text>
         </CardBody>
       </Card>}</> }
       

@@ -1,5 +1,5 @@
 {
-  "name": "cetepv2",
+  "name": "cetcp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
     "lottie-react": "^2.4.0",
+    "moment": "^2.29.4",
     "next": "13.4.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
