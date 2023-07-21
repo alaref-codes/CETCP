@@ -17,7 +17,7 @@ export default function CourseContentMobile({lectures,course,currentLectureId}) 
                   _hover={{
                     color: "black",
                   }}
-                  padding={"20px"} paddingRight={"2px"} fontWeight={"extrabold"} fontSize={"1.2rem"} >{lecture.id}  - {lecture.name}</ListItem>
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"extrabold"} fontSize={"1.2rem"} >{lecture.name}</ListItem>
                 </Link>
               </OrderedList> : 
               <OrderedList listStyleType={"none"} paddingRight={"30px"}
@@ -31,7 +31,7 @@ export default function CourseContentMobile({lectures,course,currentLectureId}) 
                   _hover={{
                     color: "black",
                   }}
-                  padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.id}  - {lecture.name}</ListItem>
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.name}</ListItem>
                 </Link>
               </OrderedList>  
             ))}

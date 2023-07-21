@@ -65,7 +65,8 @@ import {
       const deleteLecture = useMutation((id) => {
         return axios.delete(`${URL.API_URL}/lectures/${id}`,{headers:
           { Authorization: `Bearer ${localStorage.getItem("token")}`}});
-      });
+        }
+      );
 
     const onSubmit = (data) => {
       mutation.mutate({variables:data})

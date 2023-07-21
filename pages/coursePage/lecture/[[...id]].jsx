@@ -4,7 +4,6 @@ import Loading from "@/components/Loading"
 import Footer from '@/components/Footer';
 import CourseNavbar from '@/components/CourseNavbar'
 import ReactPlayer from 'react-player'
-import { ChakraProvider } from '@chakra-ui/react'
 import ComplaintTab from '@/components/ComplaintTab';
 import { useState,useEffect, useContext } from 'react';
 import InfoTab from '@/components/InfoTab';
@@ -76,10 +75,16 @@ export default function CoursePage() {
             borderBottom={"2px solid black"}
             height={"max-content"}
         >
-        <Box backgroundColor={"gray.300"}  >
-            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} controls url={`${URL.LECTURES_VIDEOS}/${currentLecture.url}`}/>
+        <Box backgroundColor={"gray.500"}  >
+            <ReactPlayer height={"500px"} width={"100%"}  onDuration={onDuration} config={{ 
+            file: { 
+              attributes: {
+                controlsList: 'nodownload',
+               } 
+             } 
+            }}  controls url={`${URL.LECTURES_VIDEOS}/${currentLecture.url}`}/>
         </Box>
-        <Tabs isFitted colorScheme='blue.500' variant='line'>
+        <Tabs isFitted colorScheme='blue.500' defaultIndex={1} variant='line'>
         <TabList mb='1em' >
             <Tab display={{base:"grid",lg:"none"}} >محتوى الدورة</Tab>
             <Tab>مقدمة</Tab>
@@ -138,7 +143,7 @@ export default function CoursePage() {
             {lectures && course && lectures.map(lecture => (
 
               lecture.id == currentLectureId ? 
-              <UnorderedList listStyleType={"none"} bg={"gray"} paddingRight={"30px"} 
+              <OrderedList listStyleType={"none"} bg={"gray"} paddingRight={"30px"} 
               _hover={{
                 background: "lightgray",
               }}
@@ -148,10 +153,10 @@ export default function CoursePage() {
                   _hover={{
                     color: "black",
                   }}
-                  padding={"20px"} paddingRight={"2px"} fontWeight={"extrabold"} fontSize={"1.2rem"} >{lecture.id}  - {lecture.name}</ListItem>
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"extrabold"} fontSize={"1.2rem"} >{lecture.name}</ListItem>
                 </Link>
-              </UnorderedList> : 
-              <UnorderedList listStyleType={"none"} paddingRight={"30px"}
+              </OrderedList> : 
+              <OrderedList listStyleType={"none"} paddingRight={"30px"}
               _hover={{
                 background: "lightgray",
                 color: "black",
@@ -162,9 +167,9 @@ export default function CoursePage() {
                   _hover={{
                     color: "black",
                   }}
-                  padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.id}  - {lecture.name}</ListItem>
+                  padding={"20px"} paddingRight={"2px"} fontWeight={"bold"}  >{lecture.name}</ListItem>
                 </Link>
-              </UnorderedList>  
+              </OrderedList>  
             ))}
 
         </Box>

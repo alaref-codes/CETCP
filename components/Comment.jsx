@@ -52,16 +52,15 @@ export default function Comment({lectureId,values}) {
                 <Text>قم بكتابة تعليقك</Text>
             </Box>
             <FormControl width={{base:"300px",md:"500px"}} marginY={"20px"}>
-                <Textarea  width={"100%"} placeholder="أضف تعليقك هنا"  id='comment' type="text" {...register("comment")} />
+                <Textarea  required width={"100%"} placeholder="أضف تعليقك هنا"  id='comment' type="text" {...register("comment")} />
             </FormControl> 
             <Button
-            type='submit'
-            loadingText="Submitting"
-            width={"15%"}
-            bg={'blue.400'}
-            color={'white'}
-            _hover={{
-                bg: 'blue.500',
+              type='submit'
+              loadingText="Submitting"
+              bg={'gray.200'}
+              color={'linkedin.700'}
+              _hover={{
+                  bg: 'blue.500',
             }}>
             إضافة تعليق
             </Button>
