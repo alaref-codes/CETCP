@@ -219,16 +219,16 @@ import {
               <ModalContent>
                 <ModalHeader mr="40px" >إتمام عملية الشراء</ModalHeader>
                 <ModalCloseButton />
-                <ModalBody  width={{base:"100%",md:"50%"}} margin={"100px auto"} pb={6}>
-                  <Stack direction={{base:"column", md:"row"}} >
-                  <Image src={`${URL.STORAGE_URL}/${data.data.image}`} width={{basE:"full",md:"300px"}} height={"300px"} ></Image>
+                <ModalBody width={{base:"100%",md:"50%"}} margin={"20px auto"} pb={6}>
+                  <Stack direction={"column"} >
+                  <Image src={`${URL.STORAGE_URL}/${data.data.image}`} width={{base:"full",md:"300px"}} height={"300px"} margin={"auto"} ></Image>
                   <VStack textAlign={"start"} >
-                    <Heading padding={"20px"} >اسم الدورة: {data.data.name}</Heading>
-                    <Heading padding={"20px"} fontWeight={"light"} >المدرب: {data.data.trainer_name}</Heading>
-                    <Heading padding={"20px"} fontWeight={"light"}  >تكلفة الدورة: {data.data.price}</Heading>
+                    <Heading >اسم الدورة: {data.data.name}</Heading>
+                    <Heading fontWeight={"light"}>المدرب: {data.data.trainer_name}</Heading>
+                    <Heading fontWeight={"light"}>تكلفة الدورة: {data.data.price}</Heading>
                     {userData ? 
                     ( <>
-                      <Heading padding={"20px"} fontWeight={"light"} >رصيدك الحالي: {userData.account.balance}</Heading>
+                      <Heading fontWeight={"light"} >رصيدك الحالي: {userData.account.balance}</Heading>
                       <Text>رصيدك المتبقي {userData.account.balance - data.data.price}</Text>
                     </>
                     )  : 

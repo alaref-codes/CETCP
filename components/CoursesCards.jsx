@@ -45,7 +45,7 @@ export default function CoursesCards() {
   }
 
   return (
-      <>
+      <div id="crs">
       <Heading bg={"gray.50"}  padding={"30px"}>تصفح جميع الدورات</Heading>
       {isLoading == true ? (<Loading></Loading>) : <SimpleGrid bg={"gray.50"} width={{base:"initial", md:"95%"}} margin={"auto"} minChildWidth='280px' spacing='20px' >
       {data && data.data.data.map(course => (
@@ -54,7 +54,7 @@ export default function CoursesCards() {
     </SimpleGrid>
     }
     <Spacer h={"100px"} ></Spacer>
-    </>
+    </div>
 
       
       

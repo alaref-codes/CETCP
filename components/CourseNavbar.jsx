@@ -55,7 +55,7 @@ async function logoutCall(token) {
 export default function CourseNavbar({name}) {
     const router = useRouter();
     const { isOpen, onToggle } = useDisclosure();
-    const { isLoggedIn, token,login } = useContext(AuthContext);
+    const { isLoggedIn, token,login,logout } = useContext(AuthContext);
     const [userData, setUserData] = useState(null);
 
 

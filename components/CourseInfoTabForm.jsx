@@ -57,7 +57,7 @@ import {
     };
     let formData = new FormData();
     if (course) {
-      formData.append("image", imgData)
+      // formData.append("image", imgData)
       form = useForm({
         defaultValues: {
           name: course.name,
@@ -119,7 +119,11 @@ import {
       if (course.length !== variables.length) {
         formData.append('length', variables.length);
       }
-      formData.append('image', variables.image[0]);
+
+
+      if (typeof(variables.image[0]) !== "undefined") {
+        formData.append('image', variables.image[0]);
+      }
 
       
       return axios.post(`${URL.API_URL}/courses/${course.id}`,formData,{headers:

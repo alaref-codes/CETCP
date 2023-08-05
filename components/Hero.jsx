@@ -24,7 +24,8 @@ export default function WithBackgroundImage() {
         w={'full'}
         justify={'center'}
         px={useBreakpointValue({ base: 4, md: 8 })}
-        bgGradient={'linear(to-l, black, transparent)'}>
+        // bgGradient={'linear(to-l, purple, transparent)'}
+        >
         <Stack maxW={'2xl'} align={'flex-start'} spacing={6}>
    
           <Text
@@ -33,7 +34,7 @@ export default function WithBackgroundImage() {
             bgGradient='linear(to-l, blue.50, gold)'
             bgClip='text'
             fontSize={{base:"4xl",md:'5xl'}}
-            fontWeight='extrabold'
+            fontWeight='1000'
             >
             منصّة كليّة التّقنية الإلكترونيّة - طرابلس التعليميّة
           </Text>

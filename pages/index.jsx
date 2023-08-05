@@ -40,7 +40,8 @@ export default function Home() {
     <>
       <Head>
         <title>CETCP</title>
-        <meta name="description" content="College of electronic technology, كلية التقنية الإلكترونية منصة تعليمية" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="College of electronic technology courses platform, كلية التقنية الإلكترونية منصة تعليمية" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
